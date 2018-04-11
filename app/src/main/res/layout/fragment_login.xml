@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:padding="@dimen/medium_size"
+        android:src="@drawable/ic_close" />
+
+
+    <TextView
+        android:id="@+id/signup_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/medium_size"
+        android:text="@string/sign_in_with_mobile"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/mobile_edt"
+        style="@style/LogSignEdtTheme"
+        android:hint="@string/mobile"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/pwd_edt"
+        style="@style/LogSignEdtTheme"
+        android:layout_marginBottom="4dp"
+        android:hint="@string/password"
+        android:inputType="text" />
+
+
+    <CheckBox
+        android:id="@+id/remember_cbx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_size"
+        android:layout_marginEnd="@dimen/padding_size"
+        android:layout_marginStart="@dimen/padding_size"
+        android:layout_marginTop="@dimen/small_size"
+        android:hint="@string/remember_me" />
+
+    <Button
+        android:id="@+id/signin_btn"
+        style="@style/LogSignBtnTheme"
+        android:layout_marginTop="@dimen/x_large_size"
+        android:background="@drawable/bg_signup"
+        android:text="@string/sign_in"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/signup_btn"
+        style="@style/LogSignBtnTheme"
+        android:background="@drawable/bg_hollow"
+        android:text="@string/need_an_account"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/findpwd_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_size"
+        android:layout_marginEnd="@dimen/padding_size"
+        android:background="@null"
+        android:textColor="@color/edt_hint_color"
+        android:text="@string/forget_passwrod" />
+</LinearLayout>
