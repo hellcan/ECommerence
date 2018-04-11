@@ -18,5 +18,15 @@
     <string name="example">example</string>
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>
+    <string name="logout">Logout</string>
+    <string name="my_order">My Order</string>
+    <string name="shop">Shop</string>
+    <string name="profile">Profile</string>
+    <string name="update">update</string>
+    <string name="update_your_profile">Update Your Profile</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="reset_password">Reset password</string>
+
 
 </resources>

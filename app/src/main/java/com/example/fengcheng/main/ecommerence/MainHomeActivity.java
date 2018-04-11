@@ -14,15 +14,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 
 import java.util.zip.Inflater;
 
-public class MainHomeActivity extends AppCompatActivity{
+public class MainHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawerLayout;
-    ListView leftDrawer;
+    NavigationView leftDrawer;
     Toolbar toolbar;
-    private final int DEFAULT_POS = 2;
+    private final int DEFAULT_POS = 1;
+    int[] menuId = {R.id.profile, R.id.shop, R.id.order, R.id.logout};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,35 +40,19 @@ public class MainHomeActivity extends AppCompatActivity{
         clickListener();
 
 
-
     }
 
     private void clickListener() {
-        //click listener
-        leftDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                displaySelectedScreen(position);
-            }
-        });
-
-        //listview click
-
-        leftDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                displaySelectedScreen(position);
-            }
-        });
+        leftDrawer.setNavigationItemSelectedListener(this);
     }
 
-    private void displaySelectedScreen(int position) {
-        if (position > 0) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new HomeFragment(), "hfgt").commit();
-            leftDrawer.setItemChecked(position, true);
-            drawerLayout.closeDrawers();
-        }
-    }
+//    private void displaySelectedScreen(int position) {
+//        if (position > 0) {
+//            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new HomeFragment(), "hfgt").commit();
+//            leftDrawer.setItemChecked(position, true);
+//            drawerLayout.closeDrawers();
+//        }
+//    }
 
     private void initDrawer() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,
@@ -76,15 +62,12 @@ public class MainHomeActivity extends AppCompatActivity{
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
 
-
-
-        //listview header
+        // header
         View header = LayoutInflater.from(this).inflate(R.layout.left_drawer_header, null);
-        leftDrawer.addHeaderView(header);
-        leftDrawer.setAdapter(new DrawerAdapter(this));
 
         //this is default position
-        displaySelectedScreen(DEFAULT_POS);
+//        displaySelectedScreen(DEFAULT_POS);
+        leftDrawer.setCheckedItem(R.id.shop);
 
     }
 
@@ -96,8 +79,8 @@ public class MainHomeActivity extends AppCompatActivity{
 
     private void initToolbar() {
         toolbar = findViewById(R.id.toolbar);
-        TextView textView = toolbar.findViewById(R.id.title_tv);
-        textView.setText("Home");
+//        TextView textView = toolbar.findViewById(R.id.title_tv);
+//        textView.setText("Home");
         setSupportActionBar(toolbar);
 
     }
@@ -105,6 +88,34 @@ public class MainHomeActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.m_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.profile:
+//                toolbar.setTitle("我的动态");
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new ProfileFragment(), "hfgt").commit();
+                break;
+            case R.id.shop:
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new HomeFragment(), "hfgt").commit();
+//                toolbar.setTitle("我的留言");
+                break;
+            case R.id.order:
+//                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container,new FragmentThree()).commit();
+//                toolbar.setTitle("附近的人");
+                break;
+            case R.id.logout:
+//                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container,new FragmentThree()).commit();
+//                toolbar.setTitle("附近的人");
+                break;
+        }
+
+        menuItem.setChecked(true);//点击了把它设为选中状态
+
+
+        drawerLayout.closeDrawers();//关闭抽屉
         return true;
     }
 }
