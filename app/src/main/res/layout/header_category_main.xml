@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/main_category_rv"
+    <com.example.fengcheng.main.utils.MyBanner
+        android:id="@+id/banner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="200dp" />
 
 </LinearLayout>

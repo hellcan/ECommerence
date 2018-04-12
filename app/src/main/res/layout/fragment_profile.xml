@@ -8,15 +8,8 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:orientation="vertical"
-        android:paddingBottom="50dp">
-
-        <ImageButton
-            android:id="@+id/close_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:padding="@dimen/medium_size"
-            android:src="@drawable/ic_close" />
+        android:paddingTop="@dimen/medium_size"
+        android:paddingBottom="@dimen/x_large_size">
 
         <TextView
             android:id="@+id/signup_tv"
@@ -46,6 +39,7 @@
             android:id="@+id/address_edt"
             style="@style/LogSignEdtTheme"
             android:hint="@string/address"
+            android:maxLength="50"
             android:inputType="text" />
 
         <EditText

@@ -3,6 +3,7 @@ package com.example.fengcheng.main.ecommerence;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.fengcheng.main.utils.VolleyHelper;
 
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,15 +37,6 @@ public class SignUpFragment extends Fragment {
     EditText firstEdt, lastEdt, addressEdt, mobEdt, emailEdt, pwdEdt;
     Button signUpBtn, logBtn;
     ImageButton closeBtn;
-    private final String BASE_URL = "http://rjtmobile.com/aamir/e-commerce/android-app/";
-    private final String HEADER_REG_URL = "shop_reg.php?";
-    private final String FNAME = "fname=";
-    private final String LNAME = "lname=";
-    private final String ADDRESS = "address=";
-    private final String EMAIL = "email=";
-    private final String MOBILE = "mobile=";
-    private final String PWD = "password=";
-
 
     @Nullable
     @Override
@@ -73,15 +67,62 @@ public class SignUpFragment extends Fragment {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initSignUpVolley(firstEdt.getText().toString(), lastEdt.getText().toString(), addressEdt.getText().toString(),
-                        mobEdt.getText().toString(), emailEdt.getText().toString(), pwdEdt.getText().toString());
+                if (TextUtils.isEmpty(firstEdt.getText().toString()) || TextUtils.isEmpty(lastEdt.getText().toString())
+                        || TextUtils.isEmpty(addressEdt.getText().toString()) || TextUtils.isEmpty(mobEdt.getText().toString())
+                        || TextUtils.isEmpty(emailEdt.getText().toString()) || TextUtils.isEmpty(pwdEdt.getText().toString())) {
+                    Toast.makeText(getActivity().getBaseContext(), "Text field can not be null", Toast.LENGTH_SHORT).show();
+                } else if (pwdEdt.getText().toString().length() < 6) {
+                    Toast.makeText(getActivity().getBaseContext(), "Password can not less than 6 digits", Toast.LENGTH_SHORT).show();
+                } else if (mobEdt.getText().toString().length() != 10) {
+                    Toast.makeText(getActivity().getBaseContext(), "Mobile num must 10 digits", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    Response.Listener<String> listener = new Response.Listener<String>() {
+
+                        @Override
+                        public void onResponse(String response) {
+                            Toast.makeText(getActivity().getBaseContext(), response, Toast.LENGTH_SHORT).show();
+                            firstEdt.setText("");
+                            lastEdt.setText("");
+                            addressEdt.setText("");
+                            mobEdt.setText("");
+                            emailEdt.setText("");
+                            pwdEdt.setText("");
+                        }
+                    };
+
+                    Response.ErrorListener errorListener = new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getActivity().getBaseContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.i("测试", error.getMessage());
+                        }
+                    };
+
+
+                    StringRequest regRequest = VolleyHelper.getInstance().registrationRequest(firstEdt.getText().toString(), lastEdt.getText().toString(), addressEdt.getText().toString(),
+                            mobEdt.getText().toString(), emailEdt.getText().toString(), pwdEdt.getText().toString(), listener, errorListener);
+
+                    AppController.getInstance().addToRequestQueue(regRequest, "reg");
+                }
+
+
+            }
+        });
+
+        logBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity().getSupportFragmentManager() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
             }
         });
 
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getActivity().getSupportFragmentManager() != null){
+                if (getActivity().getSupportFragmentManager() != null) {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }
             }
@@ -89,41 +130,41 @@ public class SignUpFragment extends Fragment {
 
     }
 
-    private void initSignUpVolley(final String first, final String last, final String address, final String mob, final String email, final String pwd) {
-        String regUrl = BASE_URL + HEADER_REG_URL + FNAME + first + "&" + LNAME + last + "&" + ADDRESS + address + "&" + EMAIL + email
-                + "&" + MOBILE + mob + "&" + PWD + pwd;
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, regUrl, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(getActivity().getApplicationContext(), response, Toast.LENGTH_SHORT).show();
-                Log.i("测试", response);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity().getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("测试", error.getMessage());
-
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put(FNAME, first);
-                map.put(LNAME, last);
-                map.put(ADDRESS, address);
-                map.put(EMAIL, email);
-                map.put(MOBILE, mob);
-                map.put(PWD, pwd);
-
-
-                return map;
-            }
-        };
-
-        AppController.getInstance().addToRequestQueue(stringRequest, "reg");
-    }
+//    private void initSignUpVolley(final String first, final String last, final String address, final String mob, final String email, final String pwd) {
+//        String regUrl = BASE_URL + HEADER_REG_URL + FNAME + first + "&" + LNAME + last + "&" + ADDRESS + address + "&" + EMAIL + email
+//                + "&" + MOBILE + mob + "&" + PWD + pwd;
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, regUrl, new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                Toast.makeText(getActivity().getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+//                Log.i("测试", response);
+//
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Toast.makeText(getActivity().getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//                Log.i("测试", error.getMessage());
+//
+//            }
+//        }) {
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                Map<String, String> map = new HashMap<String, String>();
+//                map.put(FNAME, first);
+//                map.put(LNAME, last);
+//                map.put(ADDRESS, address);
+//                map.put(EMAIL, email);
+//                map.put(MOBILE, mob);
+//                map.put(PWD, pwd);
+//
+//
+//                return map;
+//            }
+//        };
+//
+//        AppController.getInstance().addToRequestQueue(stringRequest, "reg");
+//    }
 
 
 }

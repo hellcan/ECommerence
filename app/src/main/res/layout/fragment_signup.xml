@@ -35,18 +35,20 @@
             android:id="@+id/fname_edt"
             style="@style/LogSignEdtTheme"
             android:hint="@string/first_name"
-            android:inputType="text" />
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" />
 
         <EditText
             android:id="@+id/lname_edt"
             style="@style/LogSignEdtTheme"
             android:hint="@string/last_name"
-            android:inputType="text" />
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" />
 
         <EditText
             android:id="@+id/address_edt"
             style="@style/LogSignEdtTheme"
             android:hint="@string/address"
+            android:maxLength="50"
+            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             android:inputType="text" />
 
         <EditText

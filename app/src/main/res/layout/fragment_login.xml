@@ -29,14 +29,14 @@
         android:id="@+id/mobile_edt"
         style="@style/LogSignEdtTheme"
         android:hint="@string/mobile"
-        android:inputType="text" />
+        android:inputType="number" />
 
     <EditText
         android:id="@+id/pwd_edt"
         style="@style/LogSignEdtTheme"
         android:layout_marginBottom="4dp"
         android:hint="@string/password"
-        android:inputType="text" />
+        android:inputType="textPassword" />
 
 
     <CheckBox

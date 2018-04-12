@@ -22,6 +22,7 @@
         <item name="android:background">@drawable/bg_edt</item>
         <item name="android:layout_marginStart">@dimen/padding_size</item>
         <item name="android:layout_marginEnd">@dimen/padding_size</item>
+        <item name="android:maxLength">20</item>
     </style>
 
     <style name="LogSignBtnTheme">
