@@ -260,6 +260,9 @@ public class MyBanner extends FrameLayout implements ViewPager.OnPageChangeListe
                 }
             });
 
+//            if (container.getChildCount() > 0){
+//                container.removeAllViews();
+//            }
             container.addView(imageView);
             return imageView;
         }

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -65,6 +66,8 @@ public class LoginFragment extends Fragment {
 
         String remember = SpUtil.getRemember(getContext());
 
+//        Log.i("测试", remember);
+
         if (remember != null) {
             mobileEdt.setText(remember);
             remeCbx.setChecked(true);
@@ -90,7 +93,7 @@ public class LoginFragment extends Fragment {
 
                         @Override
                         public void onResponse(JSONArray response) {
-                            Toast.makeText(getActivity().getBaseContext(), response.toString(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity().getBaseContext(), response.toString(), Toast.LENGTH_SHORT).show();
                             try {
                                 for (int i = 0; i < response.length(); i++) {
                                     JSONObject user = (JSONObject) response.get(i);

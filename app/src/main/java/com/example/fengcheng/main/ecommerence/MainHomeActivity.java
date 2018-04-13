@@ -25,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.fengcheng.main.dataBean.MainCategories;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
 
@@ -32,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.Inflater;
 
 public class MainHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,9 +45,11 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     private final int DEFAULT_POS = 1;
     int[] menuId = {R.id.profile, R.id.shop, R.id.order, R.id.logout};
     private static final String TAG = "MainHomeActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
 
         initToolbar();
@@ -52,35 +57,9 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
         initView();
 
         initDrawer();
-        
-        pullData();
 
         clickListener();
 
-
-    }
-
-    private void pullData() {
-        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                Toast.makeText(getBaseContext(), response.toString(), Toast.LENGTH_SHORT).show();
-
-                Log.i(TAG, response.toString());
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getBaseContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        JsonObjectRequest logRequest = VolleyHelper.getInstance().getProductRequest(SpUtil.getUserId(this), SpUtil.getApiKey(this), listener, errorListener);
-
-        AppController.getInstance().addToRequestQueue(logRequest, "getProduct");
 
     }
 
@@ -110,6 +89,7 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     private void initView() {
         drawerLayout = findViewById(R.id.drawer_layout);
         leftDrawer = findViewById(R.id.left_drawer);
+
     }
 
     private void initToolbar() {
@@ -155,5 +135,14 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     public void switchFragment(int title, Fragment fragment, String tag) {
         toolBarTitle.setText(title);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment, tag).commit();
+    }
+
+    public void updateTitle(String title){
+        toolBarTitle.setText(title);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

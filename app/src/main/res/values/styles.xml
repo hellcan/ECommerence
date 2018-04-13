@@ -3,16 +3,18 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/toolbar_color</item>
-        <item name="colorPrimaryDark">@color/gray1</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="NoToolBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowAnimationStyle">@style/ActivityInOutAnimation</item>
     </style>
-    
+
     <style name="LogSignEdtTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -33,4 +35,10 @@
         <item name="android:layout_marginEnd">@dimen/padding_size</item>
     </style>
 
+    <style name="ActivityInOutAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/dim_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/dim_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/dim_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/dim_out</item>
+    </style>
 </resources>

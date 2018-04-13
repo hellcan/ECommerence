@@ -1,5 +1,7 @@
 package com.example.fengcheng.main.utils;
 
+import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 
@@ -75,6 +77,15 @@ public class VolleyHelper {
 
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
+
+    public JsonObjectRequest getSuCategoryRequest(String subId, String apikey, String userId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+
+        String url = BASE_URL_CATEGORY + "cust_sub_category.php?" + "Id=" + subId + "&api_key=" + apikey + "&user_id=" + userId;
+
+        Log.i("url", url);
+        return new JsonObjectRequest(url, null, listener, errorListener);
+    }
+
 
 
 }

@@ -37,6 +37,8 @@ public class SignUpFragment extends Fragment {
     EditText firstEdt, lastEdt, addressEdt, mobEdt, emailEdt, pwdEdt;
     Button signUpBtn, logBtn;
     ImageButton closeBtn;
+    private static final String EMAIL_FORMAT = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
+
 
     @Nullable
     @Override
@@ -75,7 +77,9 @@ public class SignUpFragment extends Fragment {
                     Toast.makeText(getActivity().getBaseContext(), "Password can not less than 6 digits", Toast.LENGTH_SHORT).show();
                 } else if (mobEdt.getText().toString().length() != 10) {
                     Toast.makeText(getActivity().getBaseContext(), "Mobile num must 10 digits", Toast.LENGTH_SHORT).show();
-                } else {
+                } else if (!emailEdt.getText().toString().matches(EMAIL_FORMAT)){
+                    Toast.makeText(getActivity().getBaseContext(), "Not a valid email format", Toast.LENGTH_SHORT).show();
+                }else {
 
                     Response.Listener<String> listener = new Response.Listener<String>() {
 

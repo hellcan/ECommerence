@@ -2,6 +2,7 @@ package com.example.fengcheng.main.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 /**
  * @Package com.example.fengcheng.main.utils
@@ -25,7 +26,6 @@ public class SpUtil {
         editor.putString("mobile", mobile);
         editor.putString("apikey", apikey);
         editor.putString("id", id);
-
         editor.apply();
     }
 
@@ -38,11 +38,13 @@ public class SpUtil {
     }
 
     public static void setRemember(Context context, String mobile){
+
         SharedPreferences.Editor editor = getSp(context).edit();
 
         editor.putString("remember", mobile);
 
-        editor.apply();
+        editor.commit();
+
     }
 
     public static String getRemember(Context context){

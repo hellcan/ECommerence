@@ -11,19 +11,20 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/item_main_category_iv"
+            android:id="@+id/item_sub_category_iv"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:background="@android:color/white" />
+            android:layout_height="130dp" />
 
         <TextView
-            android:id="@+id/item_main_category_tv"
+            android:id="@+id/item_sub_category_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:background="@android:color/white"
             android:paddingBottom="@dimen/small_size"
             android:paddingTop="@dimen/small_size"
-            android:textStyle="bold"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/gray1"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>
+

@@ -11,13 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fengcheng.main.dataBean.MainCategories;
-import com.example.fengcheng.main.utils.MyBanner;
 import com.example.fengcheng.main.ecommerence.R;
+import com.example.fengcheng.main.utils.MyBanner;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @Package com.example.fengcheng.main.adapter
@@ -27,20 +26,21 @@ import java.util.Random;
  * @Description ECommerence
  */
 
-public class MainCategoryAdapter extends RecyclerView.Adapter implements View.OnClickListener {
+public class SubCategoryAdapter extends RecyclerView.Adapter implements View.OnClickListener {
     private Context context;
-    private List<MainCategories.CategoryBean> dataList;
+    private List<MainCategories.CategoryBean> dataList, mainCatList;
     //item类型
     private static final int ITEM_TYPE_HEADER = 0;
     private static final int ITEM_TYPE_NORMAL = 1;
 
     private OnItemClickListener mItemClickListener;
 
-    int[] titleBg = {R.color.blue0, R.color.orange0, R.color.purple0, R.color.blue1, R.color.orange1, R.color.pink0};
+//    int[] titleBg = {R.color.blue0, R.color.orange0, R.color.purple0, R.color.blue1, R.color.orange1, R.color.pink0};
 
-    public MainCategoryAdapter(Context context, List<MainCategories.CategoryBean> dataList) {
+    public SubCategoryAdapter(Context context, List<MainCategories.CategoryBean> dataList, List<MainCategories.CategoryBean> mainCatList) {
         this.context = context;
         this.dataList = dataList;
+        this.mainCatList = mainCatList;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class MainCategoryAdapter extends RecyclerView.Adapter implements View.On
             return vh;
 
         }
-        View v = LayoutInflater.from(context).inflate(R.layout.item_category_main, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_sub_category_main, parent, false);
         vh = new NormalViewHolder(v);
         v.setOnClickListener(this);
         return vh;
@@ -78,10 +78,10 @@ public class MainCategoryAdapter extends RecyclerView.Adapter implements View.On
         } else if (holder instanceof NormalViewHolder) {
             int dataPos = position - 1;
 
-            ((NormalViewHolder) holder).mainCategoryTv.setBackground(context.getDrawable(titleBg[dataPos % 6]));
+//            ((NormalViewHolder) holder).mainCategoryTv.setBackground(context.getDrawable(titleBg[dataPos % 6]));
             ((NormalViewHolder) holder).mainCategoryTv.setText(dataList.get(dataPos).getCname());
 
-            Picasso.with(context).load(dataList.get(dataPos).getCimagerl()).fit().into(((NormalViewHolder) holder).mainCategoryIv);
+            Picasso.with(context).load(dataList.get(dataPos).getCimagerl()).fit().error(R.drawable.ic_error).into(((NormalViewHolder) holder).mainCategoryIv);
 
             ((NormalViewHolder) holder).itemView.setTag(position - 1);
 
@@ -128,14 +128,14 @@ public class MainCategoryAdapter extends RecyclerView.Adapter implements View.On
 
         public NormalViewHolder(View v) {
             super(v);
-            mainCategoryTv = v.findViewById(R.id.item_main_category_tv);
-            mainCategoryIv = v.findViewById(R.id.item_main_category_iv);
+            mainCategoryTv = v.findViewById(R.id.item_sub_category_tv);
+            mainCategoryIv = v.findViewById(R.id.item_sub_category_iv);
         }
     }
 
     private List<String> getImageUrlData() {
         List<String> imageList = new ArrayList<>();
-        for (MainCategories.CategoryBean categoryBean : dataList) {
+        for (MainCategories.CategoryBean categoryBean : mainCatList) {
             imageList.add(categoryBean.getCimagerl());
         }
         return imageList;
@@ -143,7 +143,7 @@ public class MainCategoryAdapter extends RecyclerView.Adapter implements View.On
 
     private List<String> getContentData() {
         List<String> contentList = new ArrayList<>();
-        for (MainCategories.CategoryBean categoryBean : dataList) {
+        for (MainCategories.CategoryBean categoryBean : mainCatList) {
             contentList.add("");
         }
         return contentList;
@@ -159,7 +159,7 @@ public class MainCategoryAdapter extends RecyclerView.Adapter implements View.On
         }
     }
 
-    public void setMItemClickListener(OnItemClickListener onItemClickListener){
+    public void setMItemClickListener(OnItemClickListener onItemClickListener) {
         this.mItemClickListener = onItemClickListener;
     }
 
