@@ -38,23 +38,21 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
     public CartAdapter(Context context, List<CartInfo.OrderBean> dataList) {
         this.context = context;
         this.dataList = dataList;
-        Log.i("测试长度", dataList.size() + "");
     }
 
     @Override
     public CartAdapter.mViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mViewHolder mVH;
 
-        if (viewType == -1) {//如果为空
+        if (viewType == -1) {//if empty
 
             View v = LayoutInflater.from(context).inflate(R.layout.item_empty, parent, false);
 
             mVH = new mViewHolder(v);
 
 
-        } else {//不为空
+        } else {
 
-            //获得根view
             View v = LayoutInflater.from(context).inflate(R.layout.item_shoppingcart, parent, false);
 
             mVH = new mViewHolder(v);
@@ -91,7 +89,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
     public int getItemViewType(int position) {
         if (dataList.size() <= 0) {
 
-            //空列表布局
             return -1;
 
         }
