@@ -18,6 +18,8 @@ public class SpUtil {
         return context.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
     }
 
+
+
     public static void setUserInfo(Context context, String fname, String lname, String email, String mobile, String apikey, String id) {
         SharedPreferences.Editor editor = getSp(context).edit();
         editor.putString("fname", fname);

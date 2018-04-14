@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.wang.avi.AVLoadingIndicatorView;
 
+
 public class SplashActivity extends AppCompatActivity {
     AVLoadingIndicatorView avLoadingIndicatorView;
 
@@ -14,6 +15,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
 
         avLoadingIndicatorView = findViewById(R.id.anim);
         avLoadingIndicatorView.show();
@@ -28,5 +30,4 @@ public class SplashActivity extends AppCompatActivity {
             }
         }, 3000);
     }
-
 }

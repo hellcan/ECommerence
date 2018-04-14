@@ -30,6 +30,16 @@
     <string name="m_profile">My Profile</string>
     <string name="m_home">Home</string>
     <string name="m_order">My Order</string>
+    <string name="apply">Apply</string>
+    <string name="tax">Tax</string>
+    <string name="delivery">Delivery</string>
+    <string name="total">Total</string>
+    <string name="check_out">Proceed to Checkout</string>
+    <string name="coupon_code">Coupon code</string>
+    <string name="confirm">Confirm</string>
+    <string name="description">Description</string>
+    <string name="empty">Find Nothing</string>
+    <string name="cancel">cancel</string>
 
 
 </resources>

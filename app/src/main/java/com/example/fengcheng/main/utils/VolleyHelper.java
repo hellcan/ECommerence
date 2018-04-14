@@ -8,9 +8,12 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.example.fengcheng.main.dataBean.Products;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * @Package com.example.fengcheng.main.ecommerence
@@ -23,7 +26,6 @@ import org.json.JSONObject;
 public class VolleyHelper {
     private final String BASE_URL = "http://rjtmobile.com/aamir/e-commerce/android-app/";
     private final String BASE_URL_CATEGORY = "http://rjtmobile.com/ansari/shopingcart/androidapp/";
-
     private static VolleyHelper instance;
 
     private VolleyHelper() {

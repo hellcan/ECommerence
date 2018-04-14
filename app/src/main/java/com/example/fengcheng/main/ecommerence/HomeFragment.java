@@ -13,10 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
-import android.widget.Button;
-import android.widget.ImageView;
+
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -28,7 +25,6 @@ import com.example.fengcheng.main.adapter.SubCategoryAdapter;
 import com.example.fengcheng.main.dataBean.MainCategories;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,7 +102,7 @@ public class HomeFragment extends Fragment {
 
         JsonObjectRequest logRequest = VolleyHelper.getInstance().getProductRequest(SpUtil.getUserId(getContext()), SpUtil.getApiKey(getContext()), listener, errorListener);
 
-        AppController.getInstance().addToRequestQueue(logRequest, "getProduct");
+        AppController.getInstance().addToRequestQueue(logRequest, "getProductList");
 
     }
 
@@ -118,14 +114,12 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(mainCategoryAdapter);
 
 
-
-
         mainCategoryAdapter.setMItemClickListener(new MainCategoryAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
 //                startActivity(new Intent(getActivity(), SubActivity.class));
                 pullSubData(position);
-                MainHomeActivity activity = (MainHomeActivity)getActivity();
+                MainHomeActivity activity = (MainHomeActivity) getActivity();
                 if (activity != null) {
                     activity.updateTitle(mainCategoryList.get(position).getCname());
                 }
@@ -133,18 +127,25 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * @param dataList sub category data list
+     * @param mainCategoryList  main category data list
+     * we set up sub category list here
+     */
+
     private void resetRecyclerView(List<MainCategories.CategoryBean> dataList, List<MainCategories.CategoryBean> mainCategoryList) {
         SubCategoryAdapter adapter = new SubCategoryAdapter(getContext(), dataList, mainCategoryList);
         RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-
-
         adapter.setMItemClickListener(new SubCategoryAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction().
+                        replace(R.id.content_frame, new ProductFragment(), "productfgt")
+                        .commit();
             }
         });
     }

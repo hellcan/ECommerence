@@ -9,33 +9,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.fengcheng.main.dataBean.MainCategories;
-import com.example.fengcheng.main.utils.SpUtil;
-import com.example.fengcheng.main.utils.VolleyHelper;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
 
 public class MainHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawerLayout;
@@ -45,6 +23,7 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     private final int DEFAULT_POS = 1;
     int[] menuId = {R.id.profile, R.id.shop, R.id.order, R.id.logout};
     private static final String TAG = "MainHomeActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +39,8 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
         clickListener();
 
-
     }
+
 
     private void clickListener() {
         leftDrawer.setNavigationItemSelectedListener(this);
@@ -127,8 +106,8 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
         menuItem.setChecked(true);//点击了把它设为选中状态
 
-
         drawerLayout.closeDrawers();//关闭抽屉
+
         return true;
     }
 
@@ -137,12 +116,27 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragment, tag).commit();
     }
 
-    public void updateTitle(String title){
+    public void updateTitle(String title) {
         toolBarTitle.setText(title);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.cart:
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new ShoppingCartFragment(), "shoppingCartFgt").commit();
+                break;
+            case R.id.search:
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
