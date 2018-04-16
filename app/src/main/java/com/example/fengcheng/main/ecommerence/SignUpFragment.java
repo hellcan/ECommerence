@@ -134,41 +134,6 @@ public class SignUpFragment extends Fragment {
 
     }
 
-//    private void initSignUpVolley(final String first, final String last, final String address, final String mob, final String email, final String pwd) {
-//        String regUrl = BASE_URL + HEADER_REG_URL + FNAME + first + "&" + LNAME + last + "&" + ADDRESS + address + "&" + EMAIL + email
-//                + "&" + MOBILE + mob + "&" + PWD + pwd;
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, regUrl, new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                Toast.makeText(getActivity().getApplicationContext(), response, Toast.LENGTH_SHORT).show();
-//                Log.i("测试", response);
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Toast.makeText(getActivity().getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-//                Log.i("测试", error.getMessage());
-//
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> map = new HashMap<String, String>();
-//                map.put(FNAME, first);
-//                map.put(LNAME, last);
-//                map.put(ADDRESS, address);
-//                map.put(EMAIL, email);
-//                map.put(MOBILE, mob);
-//                map.put(PWD, pwd);
-//
-//
-//                return map;
-//            }
-//        };
-//
-//        AppController.getInstance().addToRequestQueue(stringRequest, "reg");
-//    }
 
 
 }

@@ -66,28 +66,68 @@ public class VolleyHelper {
         return new StringRequest(Request.Method.GET, url, listener, errorListener);
     }
 
-    public JsonObjectRequest getProductRequest(String mobile, String pwd, String newPwd, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    public JsonObjectRequest resetPwdRequest(String mobile, String pwd, String newPwd, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
         String url = BASE_URL + "shop_reset_pass.php?" + "&mobile=" + mobile + "&password=" + pwd + "&newpassword=" + newPwd;
 
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
 
-    public JsonObjectRequest getProductRequest(String id, String apikey, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    //request to get main category
+    public JsonObjectRequest getMainCategoryRequest(String id, String apikey, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
         String url = BASE_URL_CATEGORY + "cust_category.php?" + "api_key=" + apikey + "&user_id=" + id;
 
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
 
+    //request to get sub category
     public JsonObjectRequest getSuCategoryRequest(String subId, String apikey, String userId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
         String url = BASE_URL_CATEGORY + "cust_sub_category.php?" + "Id=" + subId + "&api_key=" + apikey + "&user_id=" + userId;
+
+        return new JsonObjectRequest(url, null, listener, errorListener);
+    }
+
+    //request to get productList
+    public JsonObjectRequest getProductListRequest(String cid, String subId, String apikey, String userId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+
+        String url = BASE_URL_CATEGORY + "product_details.php?" + "cid=" + cid +  "&scid=" + subId + "&api_key=" + apikey + "&user_id=" + userId;
+
+        Log.i("url", url);
+        return new JsonObjectRequest(url, null, listener, errorListener);
+    }
+
+    //request to get sub category
+    public JsonObjectRequest makeOrder(String pid, String pname, String quantity, String price,
+            String userId, String userName, String mobile, String email, String apikey,
+                                       Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+
+        String url = BASE_URL_CATEGORY + "orders.php?" + "item_id=" + pid +  "&item_name=" + pname
+                + "&item_quantity=" + quantity + "&final_price=" + price  + "&api_key=" + apikey
+                + "&user_id=" + userId + "&user_name=" + userName + "&billingadd=Noida&deliveryadd=Noida" +
+                "&mobile=" + mobile + "&email=" + email;
+
+        Log.i("url", url);
+        return new JsonObjectRequest(url, null, listener, errorListener);
+    }
+
+    //request to get productList
+    public JsonObjectRequest couponRequest(String apikey, String userId, String coupon, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+
+        String url = BASE_URL + "coupon.php?" + "api_key=" + apikey + "&user_id=" + userId + "&couponno=" + coupon ;
 
         Log.i("url", url);
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
 
 
+    //order history
+    public JsonObjectRequest orderHistory(String apikey, String userId, String mobile, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
+        String url = BASE_URL + "order_history.php?" + "api_key=" + apikey + "&user_id=" + userId + "&mobile=" + mobile ;
+
+        Log.i("url", url);
+        return new JsonObjectRequest(url, null, listener, errorListener);
+    }
 }

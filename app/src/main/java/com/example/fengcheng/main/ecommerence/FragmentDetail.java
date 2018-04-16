@@ -16,8 +16,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.fengcheng.main.dataBean.CartInfo;
+import com.example.fengcheng.main.dataBean.Products;
+import com.example.fengcheng.main.db.DbManager;
+import com.example.fengcheng.main.utils.SpUtil;
+import com.example.fengcheng.main.utils.VolleyHelper;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 /**
@@ -30,6 +43,8 @@ public class FragmentDetail extends Fragment {
     TextView titleTv, priceTv, descTv;
     Button addCartBtn;
     String id, name, price, imgUrl;
+    DbManager dbManager;
+    private static final String TAG = "FragmentDetail";
 
     @Nullable
     @Override
@@ -42,7 +57,6 @@ public class FragmentDetail extends Fragment {
 
         return v;
     }
-
 
     /**
      * @param v rootView: fragment_product
@@ -64,14 +78,7 @@ public class FragmentDetail extends Fragment {
             price = bundle.getString("price");
             imgUrl = bundle.getString("imgurl");
 
-            if (id.equals("308")) {
-                Picasso.with(getContext()).load(R.drawable.i5_laptop).into(productPicIv);
-            } else if (id.equals("315")) {
-                Picasso.with(getContext()).load(R.drawable.hp).into(productPicIv);
-
-            } else if (id.equals("316")) {
-                Picasso.with(getContext()).load(R.drawable.macbook).into(productPicIv);
-            }
+            Picasso.with(getContext()).load(imgUrl).fit().error(R.drawable.bt_ic_camera).into(productPicIv);
 
             titleTv.setText(name);
             priceTv.setText("$" + price);
@@ -90,20 +97,17 @@ public class FragmentDetail extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (CartInfo.getInstance().getOrderBeanList().size() > 0) {
-                    for (CartInfo.OrderBean item : CartInfo.getInstance().getOrderBeanList()) {
-                        if (item.getPid().equals(id)) {
-                            item.setQuantity(item.getQuantity() + 1);
-                        } else {
-                            CartInfo.getInstance().getOrderBeanList().add(new CartInfo.OrderBean(id, name, 1, price, imgUrl));
-
-                        }
-                    }
-                }else {
-                    CartInfo.getInstance().getOrderBeanList().add(new CartInfo.OrderBean(id, name, 1, price, imgUrl));
+                dbManager = new DbManager(getContext());
+                dbManager.openDatabase();
+                int quantity = dbManager.verifyItemInCart(name, SpUtil.getUserId(getContext()));
+                Log.i("数量", quantity + "");
+                //means this user do not have this item in his cart
+                if (quantity == -1) {
+                    dbManager.addItemToCart(SpUtil.getUserId(getContext()), id, name, 1, price, imgUrl);
+                } else {
+                    dbManager.updateShoppingCartQty(quantity + 1, name, SpUtil.getUserId(getContext()));
                 }
                 setSnackBar(v);
-
             }
         });
 
@@ -126,5 +130,13 @@ public class FragmentDetail extends Fragment {
             }
         });
         snackbar.show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (dbManager != null) {
+            dbManager.closeDatabase();
+        }
     }
 }

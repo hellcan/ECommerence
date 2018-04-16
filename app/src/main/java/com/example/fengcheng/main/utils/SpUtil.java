@@ -28,7 +28,32 @@ public class SpUtil {
         editor.putString("mobile", mobile);
         editor.putString("apikey", apikey);
         editor.putString("id", id);
-        editor.apply();
+        editor.commit();
+    }
+
+    public static void updateUserInfo(Context context, String fname, String lname, String email, String mobile) {
+        SharedPreferences.Editor editor = getSp(context).edit();
+        editor.putString("fname", fname);
+        editor.putString("lname", lname);
+        editor.putString("email", email);
+        editor.putString("mobile", mobile);
+        editor.commit();
+    }
+
+    public static String getUserName(Context context){
+        return getSp(context).getString("fname", null);
+    }
+
+    public static String getLastName(Context context){
+        return getSp(context).getString("lname", null);
+    }
+
+    public static String getEmail(Context context){
+        return getSp(context).getString("email", null);
+    }
+
+    public static String getMobile(Context context){
+        return getSp(context).getString("mobile", null);
     }
 
     public static String getApiKey(Context context){

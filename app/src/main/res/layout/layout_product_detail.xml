@@ -17,11 +17,12 @@
 
             <ImageView
                 android:id="@+id/product_pic"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
+                android:padding="@dimen/padding_size"
                 android:layout_marginTop="@dimen/padding_size"
-                android:src="@drawable/bt_ic_sms_code_dark" />
+                android:src="@drawable/bt_ic_camera" />
 
             <TextView
                 android:id="@+id/product_title_tv"

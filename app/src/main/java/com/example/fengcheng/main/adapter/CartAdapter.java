@@ -64,15 +64,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
     @Override
     public void onBindViewHolder(CartAdapter.mViewHolder holder, int position) {
         if (dataList.size() > 0) {
-            if (dataList.get(position).getPid().equals("308")) {
-                Picasso.with(context).load(R.drawable.i5_laptop).into(holder.itemPic);
-            } else if (dataList.get(position).getPid().equals("315")) {
-                Picasso.with(context).load(R.drawable.hp).into(holder.itemPic);
-
-            } else if (dataList.get(position).getPid().equals("316")) {
-                Picasso.with(context).load(R.drawable.macbook).into(holder.itemPic);
-            }
-
+            Picasso.with(context).load(dataList.get(position).getImageurl()).into(holder.itemPic);
 
             holder.nameTv.setText(dataList.get(position).getPname());
             holder.priceTv.setText("$" + dataList.get(position).getPrize());
@@ -122,12 +114,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
             switch (v.getId()) {
                 case R.id.order_add_btn:
                     quantityTv.setText(String.valueOf(Integer.parseInt(quantityTv.getText().toString()) + 1));
-                    CartInfo.getInstance().getOrderBeanList().get(getLayoutPosition()).setQuantity(Integer.parseInt(quantityTv.getText().toString()));
+                    dataList.get(getLayoutPosition()).setQuantity(Integer.parseInt(quantityTv.getText().toString()));
                     EventBus.getDefault().post(true);
                     break;
                 case R.id.order_minus_btn:
                     quantityTv.setText(String.valueOf(Integer.parseInt(quantityTv.getText().toString()) - 1));
-                    CartInfo.getInstance().getOrderBeanList().get(getLayoutPosition()).setQuantity(Integer.parseInt(quantityTv.getText().toString()));
+                    dataList.get(getLayoutPosition()).setQuantity(Integer.parseInt(quantityTv.getText().toString()));
 
                     if (quantityTv.getText().toString().equals("0")) {
                         AlertDialog dialog = new AlertDialog.Builder(context)
@@ -135,13 +127,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         quantityTv.setText("1");
-                                        CartInfo.getInstance().getOrderBeanList().get(getLayoutPosition()).setQuantity(1);
+                                        dataList.get(getLayoutPosition()).setQuantity(1);
                                     }
                                 }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        CartInfo.getInstance().getOrderBeanList().remove(getLayoutPosition());
+                                        dataList.remove(getLayoutPosition());
                                         notifyDataSetChanged();
                                     }
                                 }).setMessage("You want remove this item from shopping cart?").create();

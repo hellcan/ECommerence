@@ -1,12 +1,9 @@
 package com.example.fengcheng.main.ecommerence;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -15,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -45,6 +41,7 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     List<MainCategories.CategoryBean> mainCategoryList;
     List<MainCategories.CategoryBean> subCategoryList;
+    private int mainCategoryPicked = -1;
     private static final String TAG = "HomeFragment";
 
     @Nullable
@@ -100,9 +97,9 @@ public class HomeFragment extends Fragment {
             }
         };
 
-        JsonObjectRequest logRequest = VolleyHelper.getInstance().getProductRequest(SpUtil.getUserId(getContext()), SpUtil.getApiKey(getContext()), listener, errorListener);
+        JsonObjectRequest logRequest = VolleyHelper.getInstance().getMainCategoryRequest(SpUtil.getUserId(getContext()), SpUtil.getApiKey(getContext()), listener, errorListener);
 
-        AppController.getInstance().addToRequestQueue(logRequest, "getProductList");
+        AppController.getInstance().addToRequestQueue(logRequest, "getMainCategoryList");
 
     }
 
@@ -122,6 +119,7 @@ public class HomeFragment extends Fragment {
                 MainHomeActivity activity = (MainHomeActivity) getActivity();
                 if (activity != null) {
                     activity.updateTitle(mainCategoryList.get(position).getCname());
+                    mainCategoryPicked = position;
                 }
             }
         });
@@ -133,7 +131,7 @@ public class HomeFragment extends Fragment {
      * we set up sub category list here
      */
 
-    private void resetRecyclerView(List<MainCategories.CategoryBean> dataList, List<MainCategories.CategoryBean> mainCategoryList) {
+    private void resetRecyclerView(List<MainCategories.CategoryBean> dataList, final List<MainCategories.CategoryBean> mainCategoryList) {
         SubCategoryAdapter adapter = new SubCategoryAdapter(getContext(), dataList, mainCategoryList);
         RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -142,9 +140,15 @@ public class HomeFragment extends Fragment {
         adapter.setMItemClickListener(new SubCategoryAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                ProductListFragment productListFragment = new ProductListFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("cid", mainCategoryList.get(mainCategoryPicked).getCid());
+                bundle.putString("scid", subCategoryList.get(position).getCid());
+                productListFragment.setArguments(bundle);
+
                 getActivity().getSupportFragmentManager()
-                        .beginTransaction().
-                        replace(R.id.content_frame, new ProductFragment(), "productfgt")
+                        .beginTransaction()
+                        .replace(R.id.content_frame, productListFragment, "productFgt")
                         .commit();
             }
         });
@@ -158,7 +162,7 @@ public class HomeFragment extends Fragment {
 //                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                 subCategoryList = new ArrayList<>();
                 try {
-                    JSONObject jsonObject = (JSONObject) response;
+                    JSONObject jsonObject =  response;
                     JSONArray jsonArray = jsonObject.getJSONArray("subcategory");
                     if (jsonArray == null) {
                         Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();

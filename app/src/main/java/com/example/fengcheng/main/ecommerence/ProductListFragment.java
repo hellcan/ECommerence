@@ -1,5 +1,6 @@
 package com.example.fengcheng.main.ecommerence;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,15 +8,26 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.fengcheng.main.adapter.MainCategoryAdapter;
 import com.example.fengcheng.main.adapter.ProductAdapter;
+import com.example.fengcheng.main.dataBean.MainCategories;
 import com.example.fengcheng.main.dataBean.Products;
+import com.example.fengcheng.main.utils.SpUtil;
+import com.example.fengcheng.main.utils.VolleyHelper;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +36,11 @@ import java.util.List;
  * fragment to display product list
  */
 
-public class ProductFragment extends Fragment {
+public class ProductListFragment extends Fragment {
     RecyclerView productList;
     List<Products.ProductBean> productBeanList;
     ProductAdapter productAdapter;
-
+    private static final String TAG = "ProductListFragment";
 
     @Nullable
     @Override
@@ -38,8 +50,6 @@ public class ProductFragment extends Fragment {
         initView(v);
 
         pullData();
-
-        initRecyclerView();
 
         return v;
     }
@@ -77,7 +87,53 @@ public class ProductFragment extends Fragment {
      */
 
     private void pullData() {
-        mockData();
+        String cid = getArguments().getString("cid");
+        String scid = getArguments().getString("scid");
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+//                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+                productBeanList = new ArrayList<>();
+                try {
+                    JSONObject jsonObject = (JSONObject) response;
+                    JSONArray jsonArray = jsonObject.getJSONArray("products");
+                    if (jsonArray == null) {
+                        Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObj = jsonArray.getJSONObject(i);
+                            Products.ProductBean categoryBean = new Products.ProductBean(
+                                    jsonObj.getString("id"),
+                                    jsonObj.getString("pname"),
+                                    jsonObj.getString("quantity"),
+                                    jsonObj.getString("prize"),
+                                    jsonObj.getString("discription"),
+                                    jsonObj.getString("image"));
+
+                            productBeanList.add(categoryBean);
+                        }
+                    }
+
+                    initRecyclerView();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.i(TAG, response.toString());
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        JsonObjectRequest logRequest = VolleyHelper.getInstance().getProductListRequest(cid, scid, SpUtil.getApiKey(getContext()), SpUtil.getUserId(getContext()), listener, errorListener);
+
+        AppController.getInstance().addToRequestQueue(logRequest, "getProductList");
     }
 
     /**
@@ -87,22 +143,5 @@ public class ProductFragment extends Fragment {
 
     private void initView(View v) {
         productList = v.findViewById(R.id.product_list_rv);
-    }
-
-
-    public void mockData() {
-        productBeanList = new ArrayList<>();
-
-        productBeanList.add(new Products.ProductBean("308", "i5-Laptop", "1", "60000",
-                "Online directory of electrical goods manufacturers, electronic goodssuppliers and electronic product manufacturers. Get details of electronic products",
-                "https://rjtmobile.com/ansari/shopingcart/admin/uploads/product_t_images/images.jpg"));
-
-        productBeanList.add(new Products.ProductBean("315", "HP", "1", "40000",
-                "Hp Laptops - Buy Hp Laptops at India's Best Online Shopping Store.Check Price in India and Buy Online. Free Shipping - Free Home Delivery atecom.com",
-                "https://rjtmobile.com/ansari/shopingcart/admin/uploads/product_t_images/mylaptop1.jpg"));
-
-        productBeanList.add(new Products.ProductBean("316", "Mac-Book", "11", "70000",
-                "Online directory of electrical goods manufacturers, electronic goodssuppliers and electronic product manufacturers. Get details of electronic products",
-                "https://rjtmobile.com/ansari/shopingcart/admin/uploads/product_t_images/mylaptop1.jpg"));
     }
 }
