@@ -99,7 +99,6 @@ public class SignUpFragment extends Fragment {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Toast.makeText(getActivity().getBaseContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                            Log.i("测试", error.getMessage());
                         }
                     };
 

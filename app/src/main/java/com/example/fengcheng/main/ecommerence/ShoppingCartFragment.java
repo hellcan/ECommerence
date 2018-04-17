@@ -1,5 +1,9 @@
 package com.example.fengcheng.main.ecommerence;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,9 +21,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.HttpClient;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.example.fengcheng.main.adapter.CartAdapter;
 import com.example.fengcheng.main.dataBean.CartInfo;
 import com.example.fengcheng.main.db.DbManager;
@@ -32,32 +47,37 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @Package com.example.fengcheng.main.ecommerence
- * @FileName ShoppingCartFragment
- * @Date 4/11/18, 12:05 PM
- * @Author Created by fengchengding
- * @Description ECommerence
+ * shopping cart fragment
  */
 
 public class ShoppingCartFragment extends Fragment {
     RecyclerView recyclerView;
     Button checkoutBtn;
     LinearLayout checkoutLl;
-    Button confirmBtn, cancelBtn, applyBtn;
+    Button payBtn, cancelBtn, applyBtn;
     EditText couponEdt;
     TextView taxTv, shipTv, totalTv;
     private DbManager dbManager;
     private List<CartInfo.OrderBean> itemList;
+    private int REQUEST_CODE = 9090;
+    private int count, itemSize, tax = 0;
+    CartAdapter cartAdapter;
+
     private static final String TAG = "ShoppingCartFragment";
+
+    private String mToken = "http://rjtmobile.com/aamir/braintree-paypal-payment/main.php?";
+    String token, amount = "1";
+    HashMap<String, String> paramHash;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.layout_shopping_cart, container, false);
+        View v = inflater.inflate(R.layout.fragment_shopping_cart, container, false);
 
         initView(v);
 
@@ -75,7 +95,7 @@ public class ShoppingCartFragment extends Fragment {
     private void pullData() {
         dbManager = new DbManager(getContext());
         dbManager.openDatabase();
-
+        //get shopping cart item list from database
         itemList = dbManager.getCartItemList(SpUtil.getUserId(getContext()));
     }
 
@@ -86,7 +106,8 @@ public class ShoppingCartFragment extends Fragment {
                 checkoutLl.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.window_bot_in));
                 checkoutLl.setVisibility(View.VISIBLE);
 
-                countTotal();
+                //count total price need to pay
+                countTotal(false);
             }
         });
 
@@ -98,10 +119,12 @@ public class ShoppingCartFragment extends Fragment {
             }
         });
 
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
+        payBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                putOrder();
+                //call braintree
+                itemSize = itemList.size();
+                onBraintreeSubmit();
             }
         });
 
@@ -114,18 +137,59 @@ public class ShoppingCartFragment extends Fragment {
         });
     }
 
+    //init brainttree payment system
+    private void onBraintreeSubmit() {
+        DropInRequest dropInRequest = new DropInRequest()
+                .clientToken(token);
+        startActivityForResult(dropInRequest.getIntent(getActivity()), REQUEST_CODE);
+    }
+    //braintree pop up menu callback
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+                PaymentMethodNonce nonce = result.getPaymentMethodNonce();
+
+                String stringNonce = nonce.getNonce();
+                Log.d("mylog", "Result: " + stringNonce);
+                // Send payment price with the nonce
+                // use the result to update your UI and send the payment method nonce to your server
+                if (!totalTv.getText().toString().isEmpty()) {
+                    amount = totalTv.getText().toString();
+                    paramHash = new HashMap<>();
+                    paramHash.put("amount", amount);
+                    paramHash.put("nonce", stringNonce);
+                    sendPaymentDetails();
+                } else
+                    Toast.makeText(getContext(), "Please enter a valid amount.", Toast.LENGTH_SHORT).show();
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // the user canceled
+                Log.d("mylog", "user canceled");
+            } else {
+                // handle errors here, an exception may be available in
+                Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+                Log.d("mylog", "Error : " + error.toString());
+            }
+        }
+    }
+
     private void initRecyclerView() {
-        CartAdapter cartAdapter = new CartAdapter(getContext(), itemList);
+        cartAdapter = new CartAdapter(getContext(), itemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(cartAdapter);
     }
 
-
     private void initView(View v) {
+        //retrieve braintree token
+        new HttpRequest().execute();
         recyclerView = v.findViewById(R.id.my_item_list);
         checkoutBtn = v.findViewById(R.id.checkout_btn);
         checkoutLl = v.findViewById(R.id.checkout_layout);
-        confirmBtn = v.findViewById(R.id.checkout_confirm_btn);
+        payBtn = v.findViewById(R.id.checkout_confirm_btn);
         cancelBtn = v.findViewById(R.id.checkout_cancel_btn);
         couponEdt = v.findViewById(R.id.coupon_edt);
         applyBtn = v.findViewById(R.id.coupon_btn);
@@ -136,28 +200,40 @@ public class ShoppingCartFragment extends Fragment {
         couponEdt.setText("2147483648");
     }
 
-    public void countTotal() {
-        shipTv.setText("$23");
-        int total = 0;
-        for (CartInfo.OrderBean orderBean : itemList) {
-            total = total + Integer.parseInt(orderBean.getPrize()) * orderBean.getQuantity();
+    public void countTotal(boolean isTaxed) {
+        if (!isTaxed) {
+            shipTv.setText("$23");
+            int total = 0;
+            for (CartInfo.OrderBean orderBean : itemList) {
+                total = total + Integer.parseInt(orderBean.getPrize()) * orderBean.getQuantity();
+            }
+            tax = (int) (total * 0.08);
+            total = total + tax + 23;
+            totalTv.setText("$" + total);
+            taxTv.setText(" * 8% = $" + tax);
+        } else {
+            shipTv.setText("$23");
+            int total = 0;
+            for (CartInfo.OrderBean orderBean : itemList) {
+                total = total + Integer.parseInt(orderBean.getPrize()) * orderBean.getQuantity();
+            }
+            total = total + tax + 23;
         }
-        int tax = (int) (total * 0.08);
-        totalTv.setText("$" + total);
-        taxTv.setText(" * 8% = $" + tax);
     }
 
     @Subscribe
     public void onEvent(Boolean quantityChanged) {
         if (quantityChanged) {
-            countTotal();
+            countTotal(quantityChanged);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override
@@ -166,60 +242,6 @@ public class ShoppingCartFragment extends Fragment {
         EventBus.getDefault().unregister(this);
         if (dbManager != null) {
             dbManager.closeDatabase();
-        }
-    }
-
-    public void putOrder() {
-        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
-                try {
-
-                    JSONObject jsonObject = response;
-                    JSONArray jsonArray = jsonObject.getJSONArray("Order confirmed");
-                    if (jsonArray == null) {
-                        Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
-                    } else {
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObj = jsonArray.getJSONObject(i);
-                            jsonObj.getString("orderid");
-                            jsonObj.getString("orderstatus");
-                            jsonObj.getString("name");
-                            jsonObj.getString("billingadd");
-                            jsonObj.getString("deliveryadd");
-                            jsonObj.getString("mobile");
-                            jsonObj.getString("itemid");
-                            jsonObj.getString("itemname");
-                            jsonObj.getString("itemquantity");
-                            jsonObj.getString("totalprice");
-                            jsonObj.getString("paidprice");
-                            jsonObj.getString("placedon");
-                        }
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Log.i(TAG, response.toString());
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        for (int i = 0; i < itemList.size(); i++) {
-            JsonObjectRequest orderRequest = VolleyHelper.getInstance().makeOrder(itemList.get(i).getPid(), itemList.get(i).getPname(),
-                    String.valueOf(itemList.get(i).getQuantity()), itemList.get(i).getPrize(), SpUtil.getUserId(getContext()), SpUtil.getUserName(getContext()),
-                    SpUtil.getMobile(getContext()), SpUtil.getEmail(getContext()), SpUtil.getApiKey(getContext()), listener, errorListener);
-
-            AppController.getInstance().addToRequestQueue(orderRequest);
         }
     }
 
@@ -270,4 +292,98 @@ public class ShoppingCartFragment extends Fragment {
 
         AppController.getInstance().addToRequestQueue(couponRequest);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //save temp list to db here
+    }
+
+    private void sendPaymentDetails() {
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject jsonObject = response;
+                    JSONArray jsonArray = jsonObject.getJSONArray("Order confirmed");
+                    if (jsonArray == null) {
+                        Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
+                    } else {
+                        count++;
+                    }
+                    //clear shopping cart
+                    if (count == itemSize){
+                        dbManager.deleteItem(SpUtil.getUserId(getContext()));
+                        itemList.clear();
+                        cartAdapter.notifyDataSetChanged();
+                        Toast.makeText(getContext(), "Transaction successful", Toast.LENGTH_LONG).show();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.i(TAG, response.toString());
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Transaction failed", Toast.LENGTH_LONG).show();
+            }
+        };
+
+        for (int i = 0; i < itemList.size(); i++) {
+            JsonObjectRequest orderRequest = VolleyHelper.getInstance().paymentRequest(itemList.get(i).getPid(), itemList.get(i).getPname(),
+                    String.valueOf(itemList.get(i).getQuantity()), itemList.get(i).getPrize(), SpUtil.getUserId(getContext()), SpUtil.getUserName(getContext()),
+                    SpUtil.getMobile(getContext()), SpUtil.getEmail(getContext()), SpUtil.getApiKey(getContext()), listener, errorListener, paramHash);
+
+            AppController.getInstance().addToRequestQueue(orderRequest);
+        }
+    }
+
+
+    private class HttpRequest extends AsyncTask {
+        ProgressDialog progress;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progress = new ProgressDialog(getActivity(), android.R.style.Theme_DeviceDefault_Dialog);
+            progress.setCancelable(false);
+            progress.setMessage("We are contacting our servers for token, Please wait");
+            progress.setTitle("Getting token");
+            progress.show();
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            HttpClient client = new HttpClient();
+            client.get(mToken, new HttpResponseCallback() {
+                @Override
+                public void success(String responseBody) {
+                    token = responseBody;
+                }
+
+                @Override
+                public void failure(Exception exception) {
+                    final Exception ex = exception;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Failed to get token: " + ex.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            progress.dismiss();
+        }
+    }
+
 }

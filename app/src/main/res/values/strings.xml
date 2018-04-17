@@ -39,8 +39,18 @@
     <string name="confirm">Confirm</string>
     <string name="description">Description</string>
     <string name="empty">Find Nothing</string>
-    <string name="cancel">cancel</string>
-    <string name="order">Order</string>
+    <string name="cancel">Cancel</string>
+    <string name="order">Pay</string>
+    <string name="alert_delete">You want remove this item from shopping cart?</string>
+    <string name="rate_example">3.5</string>
+    <string name="process">In process</string>
+    <string name="empty_txt" />
+    <string name="remove">Remove</string>
+    <string name="about">About</string>
+
+    <string name="about_us">Technologies: \nMaterial Design \nMaterialRatingBar \nEasyBanner \nPicasso \nLoadingIndicatorView \nEventBus \nVolley
+        \nBraintree \nRecyclerView \nDrawerLayout \nNavigationView \nCardView \nAsyncTask \nFragment \nViewPager
+    </string>
 
 
 </resources>

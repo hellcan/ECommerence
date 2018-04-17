@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fengcheng.main.utils.SpUtil;
+
 public class MainHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawerLayout;
     NavigationView leftDrawer;
@@ -57,11 +59,13 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
         // header
         View header = leftDrawer.getHeaderView(0);
+        TextView nameTv = header.findViewById(R.id.username_tv);
+        nameTv.setText("Welcome " + SpUtil.getLastName(getBaseContext()));
 
 
         //this is default position
         leftDrawer.setCheckedItem(R.id.shop);
-        switchFragment(R.string.m_home, new HomeFragment(), "shopfgt");
+        switchFragment(R.string.m_home, new HomeFragment(), "shopFgt");
 
     }
 
@@ -89,18 +93,22 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.profile:
-                switchFragment(R.string.m_profile, new ProfileFragment(), "profilefgt");
+                switchFragment(R.string.m_profile, new ProfileFragment(), "profileFgt");
                 break;
             case R.id.shop:
-                switchFragment(R.string.m_home, new HomeFragment(), "shopfgt");
+                switchFragment(R.string.m_home, new HomeFragment(), "shopFgt");
                 break;
             case R.id.order:
-                switchFragment(R.string.m_order, new FragmentOrder(), "orderfgt");
+                switchFragment(R.string.m_order, new FragmentOrder(), "orderFgt");
                 break;
+            case R.id.aboutus:
+                switchFragment(R.string.about, new FragmentAbout(), "aboutFgt");
+                break;
+
             case R.id.logout:
-//                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container,new FragmentThree()).commit();
-//                toolbar.setTitle("附近的人");
-                Toast.makeText(this, "this is log out", Toast.LENGTH_SHORT).show();
+                SpUtil.clearUserInfo(getBaseContext());
+                startActivity(new Intent(MainHomeActivity.this, MainActivity.class));
+                finish();
                 break;
         }
 
@@ -132,7 +140,8 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
             case R.id.cart:
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new ShoppingCartFragment(), "shoppingCartFgt").commit();
                 break;
-            case R.id.search:
+            case R.id.wish:
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new WishFragment(), "wishFgt").commit();
                 break;
             default:
                 break;

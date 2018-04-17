@@ -19,6 +19,7 @@
             android:text="@string/example"
             android:gravity="center"
             android:drawablePadding="@dimen/small_size"
+            android:textColor="@android:color/white"
             android:drawableTop="@drawable/ic_avatar"
             android:layout_marginTop="@dimen/normal_size"
             android:layout_marginBottom="@dimen/normal_size"/>

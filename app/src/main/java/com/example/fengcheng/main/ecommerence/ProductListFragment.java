@@ -75,6 +75,7 @@ public class ProductListFragment extends Fragment {
                 bundle.putString("price", productBeanList.get(position).getPrize());
                 bundle.putString("desc", productBeanList.get(position).getDiscription());
                 bundle.putString("id", productBeanList.get(position).getPid());
+
                 fragmentDetail.setArguments(bundle);
 
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmentDetail, "detailFgt").commit();
@@ -96,7 +97,7 @@ public class ProductListFragment extends Fragment {
 //                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                 productBeanList = new ArrayList<>();
                 try {
-                    JSONObject jsonObject = (JSONObject) response;
+                    JSONObject jsonObject = response;
                     JSONArray jsonArray = jsonObject.getJSONArray("products");
                     if (jsonArray == null) {
                         Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();

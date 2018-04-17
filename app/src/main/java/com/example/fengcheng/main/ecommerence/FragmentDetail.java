@@ -7,30 +7,20 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.fengcheng.main.dataBean.CartInfo;
-import com.example.fengcheng.main.dataBean.Products;
 import com.example.fengcheng.main.db.DbManager;
 import com.example.fengcheng.main.utils.SpUtil;
-import com.example.fengcheng.main.utils.VolleyHelper;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 
 /**
@@ -40,16 +30,23 @@ import java.util.ArrayList;
 
 public class FragmentDetail extends Fragment {
     ImageView productPicIv;
-    TextView titleTv, priceTv, descTv;
+    TextView titleTv, priceTv, descTv, rateTv;
     Button addCartBtn;
     String id, name, price, imgUrl;
+    MaterialRatingBar ratingBar;
     DbManager dbManager;
+    ImageButton likeBtn;
+    String unwish = "unwish", wished = "wish";
     private static final String TAG = "FragmentDetail";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.layout_product_detail, container, false);
+        View v = inflater.inflate(R.layout.item_product_detail, container, false);
+
+        //open data base
+        dbManager = new DbManager(getContext());
+        dbManager.openDatabase();
 
         initView(v);
 
@@ -69,7 +66,11 @@ public class FragmentDetail extends Fragment {
         priceTv = v.findViewById(R.id.product_price_tv);
         descTv = v.findViewById(R.id.product_desc_tv);
         addCartBtn = v.findViewById(R.id.add_cart_tbn);
+        ratingBar = v.findViewById(R.id.rating_rb);
+        rateTv = v.findViewById(R.id.rating_tv);
+        likeBtn = v.findViewById(R.id.like_btn);
 
+        //grab data from intent
         Bundle bundle = getArguments();
 
         if (bundle != null) {
@@ -79,28 +80,35 @@ public class FragmentDetail extends Fragment {
             imgUrl = bundle.getString("imgurl");
 
             Picasso.with(getContext()).load(imgUrl).fit().error(R.drawable.bt_ic_camera).into(productPicIv);
-
             titleTv.setText(name);
             priceTv.setText("$" + price);
             descTv.setText(bundle.getString("desc"));
         }
 
+        //set up rating bar score
+        ratingBar.setRating(1.5f);
+        rateTv.setText(String.valueOf(1.5));
+
+        //set up wish icon
+        if (dbManager.verifyItemWish(id, SpUtil.getUserId(getContext())) == -1) {
+            likeBtn.setImageResource(R.drawable.ic_like_un);
+            likeBtn.setTag(R.id.tag_iswish, unwish);
+        } else {
+            likeBtn.setImageResource(R.drawable.ic_like);
+            likeBtn.setTag(R.id.tag_iswish, wished);
+        }
     }
 
     /**
      * handle add to cart Button event here
      */
 
-
     private void initClickListener() {
         addCartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                dbManager = new DbManager(getContext());
-                dbManager.openDatabase();
+                //order quantity
                 int quantity = dbManager.verifyItemInCart(name, SpUtil.getUserId(getContext()));
-                Log.i("数量", quantity + "");
                 //means this user do not have this item in his cart
                 if (quantity == -1) {
                     dbManager.addItemToCart(SpUtil.getUserId(getContext()), id, name, 1, price, imgUrl);
@@ -111,6 +119,29 @@ public class FragmentDetail extends Fragment {
             }
         });
 
+        //rating bar listener
+        ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
+            @Override
+            public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
+                rateTv.setText(String.valueOf(rating));
+            }
+        });
+
+        //wish listener
+        likeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (likeBtn.getTag(R.id.tag_iswish).equals(unwish)){
+                    likeBtn.setImageResource(R.drawable.ic_like);
+                    dbManager.addItemToWish(SpUtil.getUserId(getContext()), id, name, 1, price, imgUrl);
+                    likeBtn.setTag(R.id.tag_iswish, wished);
+                }else if (likeBtn.getTag(R.id.tag_iswish).equals(wished)){
+                    likeBtn.setImageResource(R.drawable.ic_like_un);
+                    dbManager.deleteItemWish(SpUtil.getUserId(getContext()), id);
+                    likeBtn.setTag(R.id.tag_iswish, unwish);
+                }
+            }
+        });
     }
 
     /**

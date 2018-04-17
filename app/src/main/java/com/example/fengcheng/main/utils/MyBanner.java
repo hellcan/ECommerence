@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.fengcheng.main.ecommerence.R;
-import com.example.fengcheng.main.utils.DensityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +93,7 @@ public class MyBanner extends FrameLayout implements ViewPager.OnPageChangeListe
     private void initView() {
         // child = 0 means no layout load yet
         if (getChildCount() == 0) {
-            View.inflate(getContext(), R.layout.layout_banner, this);
+            View.inflate(getContext(), R.layout.item_header_banner, this);
             bannerHolder = findViewById(R.id.vp_banner);
             bannerContent = findViewById(R.id.tv_banner_content);
             dotLayout = findViewById(R.id.ll_banner_point);

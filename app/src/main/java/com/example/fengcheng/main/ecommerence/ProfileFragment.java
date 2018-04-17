@@ -29,11 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * @Package com.example.fengcheng.main.ecommerence
- * @FileName ProfileFragment
- * @Date 4/11/18, 12:05 PM
- * @Author Created by fengchengding
- * @Description ECommerence
+ * fragment for profile update
  */
 
 public class ProfileFragment extends Fragment {
@@ -142,7 +138,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getActivity().getBaseContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.i("测试", error.getMessage());
             }
         };
 

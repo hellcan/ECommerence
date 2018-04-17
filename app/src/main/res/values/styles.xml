@@ -13,6 +13,7 @@
 
     <style name="NoToolBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowAnimationStyle">@style/ActivityInOutAnimation</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="LogSignEdtTheme">
@@ -56,4 +57,5 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:background">@drawable/bg_edt</item>
     </style>
+
 </resources>

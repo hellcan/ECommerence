@@ -2,6 +2,7 @@ package com.example.fengcheng.main.utils;
 
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 
@@ -13,7 +14,9 @@ import com.example.fengcheng.main.dataBean.Products;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Package com.example.fengcheng.main.ecommerence
@@ -26,6 +29,8 @@ import java.util.List;
 public class VolleyHelper {
     private final String BASE_URL = "http://rjtmobile.com/aamir/e-commerce/android-app/";
     private final String BASE_URL_CATEGORY = "http://rjtmobile.com/ansari/shopingcart/androidapp/";
+    private final String BASE_URL_PAYMENT = "http://rjtmobile.com/aamir/e-commerce/android-app/";
+    private static final String TAG = "VolleyHelper";
     private static VolleyHelper instance;
 
     private VolleyHelper() {
@@ -92,30 +97,50 @@ public class VolleyHelper {
     //request to get productList
     public JsonObjectRequest getProductListRequest(String cid, String subId, String apikey, String userId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
-        String url = BASE_URL_CATEGORY + "product_details.php?" + "cid=" + cid +  "&scid=" + subId + "&api_key=" + apikey + "&user_id=" + userId;
+        String url = BASE_URL_CATEGORY + "product_details.php?" + "cid=" + cid + "&scid=" + subId + "&api_key=" + apikey + "&user_id=" + userId;
 
         Log.i("url", url);
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
 
     //request to get sub category
-    public JsonObjectRequest makeOrder(String pid, String pname, String quantity, String price,
-            String userId, String userName, String mobile, String email, String apikey,
-                                       Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    public JsonObjectRequest paymentRequest(String pid, String pname, String quantity, String price,
+                                            String userId, String userName, String mobile, String email, String apikey,
+                                            Response.Listener<JSONObject> listener, Response.ErrorListener errorListener,
+                                            final Map<String, String> paramHash) {
 
-        String url = BASE_URL_CATEGORY + "orders.php?" + "item_id=" + pid +  "&item_name=" + pname
-                + "&item_quantity=" + quantity + "&final_price=" + price  + "&api_key=" + apikey
+        String url = BASE_URL_PAYMENT + "orders.php?" + "item_id=" + pid + "&item_name=" + pname
+                + "&item_quantity=" + quantity + "&final_price=" + price + "&api_key=" + apikey
                 + "&user_id=" + userId + "&user_name=" + userName + "&billingadd=Noida&deliveryadd=Noida" +
                 "&mobile=" + mobile + "&email=" + email;
 
         Log.i("url", url);
-        return new JsonObjectRequest(url, null, listener, errorListener);
+        return new JsonObjectRequest(url, null, listener, errorListener) {
+            @Override
+            protected Map<String, String> getParams() {
+                if (paramHash == null)
+                    return null;
+                Map<String, String> params = new HashMap<>();
+                for (String key : paramHash.keySet()) {
+                    params.put(key, paramHash.get(key));
+                    Log.d(TAG, "Key : " + key + " Value : " + paramHash.get(key));
+                }
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/x-www-form-urlencoded");
+                return params;
+            }
+        };
     }
 
     //request to get productList
     public JsonObjectRequest couponRequest(String apikey, String userId, String coupon, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
-        String url = BASE_URL + "coupon.php?" + "api_key=" + apikey + "&user_id=" + userId + "&couponno=" + coupon ;
+        String url = BASE_URL + "coupon.php?" + "api_key=" + apikey + "&user_id=" + userId + "&couponno=" + coupon;
 
         Log.i("url", url);
         return new JsonObjectRequest(url, null, listener, errorListener);
@@ -125,7 +150,7 @@ public class VolleyHelper {
     //order history
     public JsonObjectRequest orderHistory(String apikey, String userId, String mobile, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
 
-        String url = BASE_URL + "order_history.php?" + "api_key=" + apikey + "&user_id=" + userId + "&mobile=" + mobile ;
+        String url = BASE_URL + "order_history.php?" + "api_key=" + apikey + "&user_id=" + userId + "&mobile=" + mobile;
 
         Log.i("url", url);
         return new JsonObjectRequest(url, null, listener, errorListener);

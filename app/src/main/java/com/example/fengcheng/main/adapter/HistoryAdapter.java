@@ -5,14 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.fengcheng.main.dataBean.Products;
+import com.example.fengcheng.main.dataBean.OrderHistory;
 import com.example.fengcheng.main.ecommerence.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -20,29 +16,32 @@ import java.util.List;
  * product recyclerView data adapter
  */
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.mViewHolder> implements View.OnClickListener {
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.mViewHolder> implements View.OnClickListener {
     private Context context;
-    private List<Products.ProductBean> dataList;
+    private List<OrderHistory.Order> dataList;
     private MainCategoryAdapter.OnItemClickListener mItemClickListener;
 
 
-    public ProductAdapter(Context context, List<Products.ProductBean> dataList) {
+    public HistoryAdapter(Context context, List<OrderHistory.Order> dataList) {
         this.context = context;
         this.dataList = dataList;
     }
 
     @Override
     public mViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.item_product_list, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_order_list, parent, false);
         v.setOnClickListener(this);
         return new mViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(mViewHolder holder, int position) {
-        Picasso.with(context).load(dataList.get(position).getImageurl()).placeholder(R.drawable.bt_ic_camera).fit().into(holder.productPicIv);
-        holder.productTitle.setText(dataList.get(position).getPname());
-        holder.productPrice.setText("$" + dataList.get(position).getPrize());
+        holder.idTv.setText("# " + dataList.get(position).getOrderid());
+        holder.timeTv.setText(dataList.get(position).getPlacedon());
+        holder.priceTv.setText("$" + dataList.get(position).getTotalprice());
+        if (dataList.get(position).getOrderstatus().equals("1")) {
+            holder.statusTv.setText(R.string.process);
+        }
         holder.itemView.setTag(position);
     }
 
@@ -58,18 +57,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.mViewHol
         }
     }
 
-    class mViewHolder extends RecyclerView.ViewHolder{
-        ImageView productPicIv;
-        TextView productTitle, productPrice;
+    class mViewHolder extends RecyclerView.ViewHolder {
+        TextView idTv, timeTv, priceTv, statusTv;
+
         public mViewHolder(View itemView) {
             super(itemView);
-            productPicIv = itemView.findViewById(R.id.product_pic_iv);
-            productTitle = itemView.findViewById(R.id.product_title_tv);
-            productPrice = itemView.findViewById(R.id.product_price_tv);
+            idTv = itemView.findViewById(R.id.his_id_tv);
+            timeTv = itemView.findViewById(R.id.his_time_tv);
+            priceTv = itemView.findViewById(R.id.his_price_tv);
+            statusTv = itemView.findViewById(R.id.his_status_tv);
+
         }
     }
 
-    public void setMItemClickListener(MainCategoryAdapter.OnItemClickListener onItemClickListener){
+    public void setMItemClickListener(MainCategoryAdapter.OnItemClickListener onItemClickListener) {
         this.mItemClickListener = onItemClickListener;
     }
 

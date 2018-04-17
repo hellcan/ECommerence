@@ -19,11 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Package com.example.fengcheng.main.adapter
- * @FileName MainCategoryAdapter
- * @Date 4/11/18, 9:55 PM
- * @Author Created by fengchengding
- * @Description ECommerence
+ * Sub category list adapter
  */
 
 public class SubCategoryAdapter extends RecyclerView.Adapter implements View.OnClickListener {

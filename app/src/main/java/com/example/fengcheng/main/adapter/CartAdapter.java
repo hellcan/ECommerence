@@ -136,7 +136,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
                                         dataList.remove(getLayoutPosition());
                                         notifyDataSetChanged();
                                     }
-                                }).setMessage("You want remove this item from shopping cart?").create();
+                                }).setMessage(R.string.alert_delete).create();
+                        dialog.setCancelable(false);
                         dialog.show();
                     }
 

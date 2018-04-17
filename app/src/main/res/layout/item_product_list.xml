@@ -22,10 +22,20 @@
             android:id="@+id/product_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/medium_size"
+            android:layout_marginTop="@dimen/normal_size"
             android:text="name"
             android:textColor="@color/gray1"
             android:textSize="15sp" />
+
+        <me.zhanghai.android.materialratingbar.MaterialRatingBar
+            android:id="@+id/rating_rb"
+            style="@style/Widget.MaterialRatingBar.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_size"
+            android:numStars="5"
+            android:isIndicator="true"
+            android:rating="1.5" />
 
         <TextView
             android:id="@+id/product_price_tv"
@@ -36,6 +46,8 @@
             android:textColor="@color/gray1"
             android:textSize="13sp"
             android:textStyle="italic" />
+
+
 
     </LinearLayout>
 </LinearLayout>

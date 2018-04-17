@@ -31,6 +31,18 @@ public class SpUtil {
         editor.commit();
     }
 
+    public static void clearUserInfo(Context context) {
+        SharedPreferences.Editor editor = getSp(context).edit();
+        editor.putString("fname", null);
+        editor.putString("lname", null);
+        editor.putString("email", null);
+        editor.putString("mobile", null);
+        editor.putString("apikey", null);
+        editor.putString("id", null);
+        editor.commit();
+    }
+
+
     public static void updateUserInfo(Context context, String fname, String lname, String email, String mobile) {
         SharedPreferences.Editor editor = getSp(context).edit();
         editor.putString("fname", fname);

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.fengcheng.main.adapter.HistoryAdapter;
+import com.example.fengcheng.main.dataBean.OrderHistory;
 import com.example.fengcheng.main.dataBean.Products;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
@@ -22,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Package com.example.fengcheng.main.ecommerence
@@ -33,47 +38,57 @@ import java.util.ArrayList;
 
 public class FragmentOrder extends Fragment {
     private static final String TAG = "FragmentOrder";
+    private List<OrderHistory.Order> orderList;
+    private RecyclerView historyRv;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_order, container, false);
 
+        initView(v);
         pullData();
         return v;
     }
 
+    private void initView(View v) {
+        historyRv = v.findViewById(R.id.order_history_list);
+    }
+
     private void pullData() {
+        orderList = new ArrayList<>();
+
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
-                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                 try {
-                    JSONObject jsonObject =  response;
+                    JSONObject jsonObject = response;
                     JSONArray jsonArray = jsonObject.getJSONArray("Order history");
                     if (jsonArray == null) {
                         Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObj = jsonArray.getJSONObject(i);
-                            jsonObj.getString("orderid");
-                            jsonObj.getString("orderstatus");
-                            jsonObj.getString("name");
-                            jsonObj.getString("billingadd");
-                            jsonObj.getString("deliveryadd");
-                            jsonObj.getString("mobile");
-                            jsonObj.getString("itemid");
-                            jsonObj.getString("itemname");
-                            jsonObj.getString("itemquantity");
-                            jsonObj.getString("totalprice");
-                            jsonObj.getString("paidprice");
-                            jsonObj.getString("placedon");
 
+                            orderList.add(new OrderHistory.Order(jsonObj.getString("orderid"),
+                                    jsonObj.getString("orderstatus"),
+                                    jsonObj.getString("name"),
+                                    jsonObj.getString("billingadd"),
+                                    jsonObj.getString("deliveryadd"),
+                                    jsonObj.getString("mobile"),
+                                    jsonObj.getString("email"),
+                                    jsonObj.getString("itemid"),
+                                    jsonObj.getString("itemname"),
+                                    jsonObj.getString("itemquantity"),
+                                    jsonObj.getString("totalprice"),
+                                    jsonObj.getString("paidprice"),
+                                    jsonObj.getString("placedon")));
                         }
                     }
 
-//                    initRecyclerView();
+                    initRecyclerView();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -93,6 +108,12 @@ public class FragmentOrder extends Fragment {
                 SpUtil.getMobile(getContext()), listener, errorListener);
 
         AppController.getInstance().addToRequestQueue(history, "history");
+
+    }
+
+    private void initRecyclerView() {
+        historyRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        historyRv.setAdapter(new HistoryAdapter(getContext(), orderList));
 
     }
 }
