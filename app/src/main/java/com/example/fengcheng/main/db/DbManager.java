@@ -125,11 +125,13 @@ public class DbManager {
     }
 
 
+    public void deleteItem(String userId){
+        String sql = "DELETE FROM " + cartTable + " WHERE mobile=" +  "\"" + userId + "\"";
+        mdb.execSQL(sql);
+    }
 
-
-
-    public void deleteItem(String mobile){
-        String sql = "DELETE FROM " + cartTable + " WHERE mobile=" +  "\"" + mobile + "\"";
+    public void deleteItemCart(String userId, String pid){
+        String sql = "DELETE FROM " + cartTable + " WHERE mobile=" +  "\"" + userId + "\"" + "AND pid =" + "\"" + pid + "\"";
         mdb.execSQL(sql);
     }
 

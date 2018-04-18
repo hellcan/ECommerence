@@ -37,6 +37,7 @@ import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.example.fengcheng.main.adapter.CartAdapter;
 import com.example.fengcheng.main.dataBean.CartInfo;
+import com.example.fengcheng.main.dataBean.OrderHistory;
 import com.example.fengcheng.main.db.DbManager;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
@@ -47,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,20 +60,21 @@ import java.util.Map;
 public class ShoppingCartFragment extends Fragment {
     RecyclerView recyclerView;
     Button checkoutBtn;
-    LinearLayout checkoutLl;
-    Button payBtn, cancelBtn, applyBtn;
+    LinearLayout checkoutLl, summaryLl;
+    Button payBtn, cancelBtn, applyBtn, trackBtn;
     EditText couponEdt;
-    TextView taxTv, shipTv, totalTv;
+    TextView taxTv, shipTv, totalTv, idTv, timeTv, addressTv, mobileTv, paymentTv;
     private DbManager dbManager;
     private List<CartInfo.OrderBean> itemList;
     private int REQUEST_CODE = 9090;
-    private int count, itemSize, tax = 0;
+    private int count, itemSize, tax = 0, deliveyCharge = 23;
+    private List<OrderHistory.Order> orderSummaryList;
     CartAdapter cartAdapter;
 
     private static final String TAG = "ShoppingCartFragment";
 
     private String mToken = "http://rjtmobile.com/aamir/braintree-paypal-payment/main.php?";
-    String token, amount = "1";
+    String token, amount = "1", paymentType, cardDesc;
     HashMap<String, String> paramHash;
 
     @Nullable
@@ -119,6 +122,7 @@ public class ShoppingCartFragment extends Fragment {
             }
         });
 
+        //make payment -> ask braintree
         payBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +139,13 @@ public class ShoppingCartFragment extends Fragment {
                 applyCoupon(couponEdt.getText().toString());
             }
         });
+
+        trackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new FragmentOrder(), "historyFgt").commit();
+            }
+        });
     }
 
     //init brainttree payment system
@@ -143,6 +154,7 @@ public class ShoppingCartFragment extends Fragment {
                 .clientToken(token);
         startActivityForResult(dropInRequest.getIntent(getActivity()), REQUEST_CODE);
     }
+
     //braintree pop up menu callback
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -150,8 +162,13 @@ public class ShoppingCartFragment extends Fragment {
 
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+                //this is braintree call back data
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+                //this is payment method i choose (credit card)
                 PaymentMethodNonce nonce = result.getPaymentMethodNonce();
+
+                paymentType = nonce.getDescription();
+                cardDesc = nonce.getTypeLabel();
 
                 String stringNonce = nonce.getNonce();
                 Log.d("mylog", "Result: " + stringNonce);
@@ -162,6 +179,7 @@ public class ShoppingCartFragment extends Fragment {
                     paramHash = new HashMap<>();
                     paramHash.put("amount", amount);
                     paramHash.put("nonce", stringNonce);
+                    //send payment total and payment nonce to rjt server
                     sendPaymentDetails();
                 } else
                     Toast.makeText(getContext(), "Please enter a valid amount.", Toast.LENGTH_SHORT).show();
@@ -196,29 +214,27 @@ public class ShoppingCartFragment extends Fragment {
         taxTv = v.findViewById(R.id.tax_total_tv);
         shipTv = v.findViewById(R.id.deli_total_tv);
         totalTv = v.findViewById(R.id.total_tv);
+        summaryLl = v.findViewById(R.id.ordersum_ll);
+        idTv = v.findViewById(R.id.orderid_tv);
+        timeTv = v.findViewById(R.id.time_tv);
+        addressTv = v.findViewById(R.id.address_tv);
+        mobileTv = v.findViewById(R.id.mobile_tv);
+        paymentTv = v.findViewById(R.id.payment_tv);
+        trackBtn = v.findViewById(R.id.track_btn);
 
         couponEdt.setText("2147483648");
     }
 
     public void countTotal(boolean isTaxed) {
-        if (!isTaxed) {
-            shipTv.setText("$23");
-            int total = 0;
-            for (CartInfo.OrderBean orderBean : itemList) {
-                total = total + Integer.parseInt(orderBean.getPrize()) * orderBean.getQuantity();
-            }
-            tax = (int) (total * 0.08);
-            total = total + tax + 23;
-            totalTv.setText("$" + total);
-            taxTv.setText(" * 8% = $" + tax);
-        } else {
-            shipTv.setText("$23");
-            int total = 0;
-            for (CartInfo.OrderBean orderBean : itemList) {
-                total = total + Integer.parseInt(orderBean.getPrize()) * orderBean.getQuantity();
-            }
-            total = total + tax + 23;
+        shipTv.setText("$" + deliveyCharge);
+        int total = 0;
+        for (CartInfo.OrderBean orderBean : itemList) {
+            total = total + Integer.parseInt(orderBean.getPrize()) * orderBean.getQuantity();
         }
+        tax = (int) (total * 0.08);
+        total = total + tax + deliveyCharge;
+        totalTv.setText("$" + total);
+        taxTv.setText(" * 8% = $" + tax);
     }
 
     @Subscribe
@@ -267,8 +283,9 @@ public class ShoppingCartFragment extends Fragment {
                     }
 
                     if (!totalTv.getText().toString().contains("*")) {
-                        int totalBefore = Integer.valueOf(totalTv.getText().toString().substring(1, totalTv.getText().toString().length()));
-                        int totolAfter = totalBefore - totalBefore * Integer.valueOf(discount) / 100;
+
+                        int totalBefore = Integer.valueOf(totalTv.getText().toString().substring(1, totalTv.getText().toString().length())) - tax - deliveyCharge;
+                        int totolAfter = totalBefore - totalBefore * Integer.valueOf(discount) / 100 + tax + deliveyCharge;
 
                         totalTv.setText("* " + discount + "% = $" + totolAfter);
                     }
@@ -300,6 +317,8 @@ public class ShoppingCartFragment extends Fragment {
     }
 
     private void sendPaymentDetails() {
+        orderSummaryList = new ArrayList<>();
+
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -309,10 +328,51 @@ public class ShoppingCartFragment extends Fragment {
                     if (jsonArray == null) {
                         Toast.makeText(getContext(), jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
                     } else {
+                        //each time request call back will count once
                         count++;
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObj = jsonArray.getJSONObject(i);
+                            orderSummaryList.add(new OrderHistory.Order(jsonObj.getString("orderid"),
+                                    jsonObj.getString("orderstatus"),
+                                    jsonObj.getString("name"),
+                                    jsonObj.getString("billingadd"),
+                                    jsonObj.getString("deliveryadd"),
+                                    jsonObj.getString("mobile"),
+                                    jsonObj.getString("email"),
+                                    jsonObj.getString("itemid"),
+                                    jsonObj.getString("itemname"),
+                                    jsonObj.getString("itemquantity"),
+                                    jsonObj.getString("totalprice"),
+                                    jsonObj.getString("paidprice"),
+                                    jsonObj.getString("placedon")));
+                        }
                     }
                     //clear shopping cart
-                    if (count == itemSize){
+                    if (count == itemSize) {
+                        //visible summary layout
+                        summaryLl.setVisibility(View.VISIBLE);
+                        int total = 0;
+                        StringBuilder sb = new StringBuilder("Order ID: ");
+                        for (OrderHistory.Order order : orderSummaryList) {
+                            total = total + Integer.valueOf(order.getTotalprice());
+                        }
+                        for (int i = 0; i < orderSummaryList.size(); i++){
+                            if (i != orderSummaryList.size() - 1){
+                                sb.append(orderSummaryList.get(i).getOrderid() + ",");
+                            }else {
+                                sb.append(orderSummaryList.get(i).getOrderid());
+                            }
+                        }
+
+                        idTv.setText(sb.toString());
+                        timeTv.setText(getString(R.string.pay_time) + orderSummaryList.get(0).getPlacedon());
+                        addressTv.setText(getString(R.string.pay_address) + orderSummaryList.get(0).getDeliveryadd());
+                        mobileTv.setText(getString(R.string.pay_mobile) + orderSummaryList.get(0).getMobile());
+
+
+                        paymentTv.setText(getString(R.string.pay_summary) + "\n" + getString(R.string.pay_total) + String.valueOf(total) + "\n"
+                                + getString(R.string.pay_paid) + String.valueOf(total) + "\n" + getString(R.string.pay_paymenttype) + cardDesc + "\n" + getString(R.string.pay_card) + paymentType);
+
                         dbManager.deleteItem(SpUtil.getUserId(getContext()));
                         itemList.clear();
                         cartAdapter.notifyDataSetChanged();
@@ -329,11 +389,12 @@ public class ShoppingCartFragment extends Fragment {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "Transaction failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Transaction failed", Toast.LENGTH_SHORT).show();
             }
         };
 
         for (int i = 0; i < itemList.size(); i++) {
+            //do rjt order web request
             JsonObjectRequest orderRequest = VolleyHelper.getInstance().paymentRequest(itemList.get(i).getPid(), itemList.get(i).getPname(),
                     String.valueOf(itemList.get(i).getQuantity()), itemList.get(i).getPrize(), SpUtil.getUserId(getContext()), SpUtil.getUserName(getContext()),
                     SpUtil.getMobile(getContext()), SpUtil.getEmail(getContext()), SpUtil.getApiKey(getContext()), listener, errorListener, paramHash);
@@ -362,6 +423,7 @@ public class ShoppingCartFragment extends Fragment {
             client.get(mToken, new HttpResponseCallback() {
                 @Override
                 public void success(String responseBody) {
+                    //get token here
                     token = responseBody;
                 }
 

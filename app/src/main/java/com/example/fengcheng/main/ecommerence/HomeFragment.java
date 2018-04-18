@@ -1,5 +1,6 @@
 package com.example.fengcheng.main.ecommerence;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,6 +44,7 @@ public class HomeFragment extends Fragment {
     List<MainCategories.CategoryBean> subCategoryList;
     private int mainCategoryPicked = -1;
     private static final String TAG = "HomeFragment";
+    ProgressDialog progress;
 
     @Nullable
     @Override
@@ -57,11 +59,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void pullData() {
+        progress = new ProgressDialog(getContext(), R.style.Base_AlertDialog);
+        progress.setCancelable(false);
+        progress.show();
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
-//                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                 mainCategoryList = new ArrayList<>();
                 try {
                     JSONObject jsonObject = (JSONObject) response;
@@ -110,6 +114,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mainCategoryAdapter);
 
+        progress.dismiss();
 
         mainCategoryAdapter.setMItemClickListener(new MainCategoryAdapter.OnItemClickListener() {
             @Override

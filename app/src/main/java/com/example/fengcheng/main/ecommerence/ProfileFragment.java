@@ -122,15 +122,17 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onResponse(String response) {
-                Toast.makeText(getActivity().getBaseContext(), response, Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(getContext(), response, Toast.LENGTH_SHORT).show();
+
+                SpUtil.updateUserInfo(getContext(),firstEdt.getText().toString(), lastEdt.getText().toString(),
+                        emailEdt.getText().toString(), mobEdt.getText().toString());
+
                 firstEdt.setText("");
                 lastEdt.setText("");
                 addressEdt.setText("");
                 mobEdt.setText("");
                 emailEdt.setText("");
-
-                SpUtil.updateUserInfo(getContext(),firstEdt.getText().toString(), lastEdt.getText().toString(),
-                        emailEdt.getText().toString(), mobEdt.getText().toString());
             }
         };
 

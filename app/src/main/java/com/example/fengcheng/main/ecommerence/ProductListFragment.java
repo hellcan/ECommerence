@@ -78,7 +78,7 @@ public class ProductListFragment extends Fragment {
 
                 fragmentDetail.setArguments(bundle);
 
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmentDetail, "detailFgt").commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, fragmentDetail, "detailFgt").addToBackStack(null).commit();
             }
         });
     }

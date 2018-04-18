@@ -39,8 +39,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.mViewHol
         holder.idTv.setText("# " + dataList.get(position).getOrderid());
         holder.timeTv.setText(dataList.get(position).getPlacedon());
         holder.priceTv.setText("$" + dataList.get(position).getTotalprice());
-        if (dataList.get(position).getOrderstatus().equals("1")) {
-            holder.statusTv.setText(R.string.process);
+
+        switch (dataList.get(position).getOrderstatus()){
+            case "1":
+                holder.statusTv.setText(R.string.order_confirm);
+                break;
+            case "2":
+                holder.statusTv.setText(R.string.order_dispatch);
+            case "3":
+                holder.statusTv.setText(R.string.order_on_way);
+                break;
+            case "4":
+                holder.statusTv.setText(R.string.order_delivered);
+                break;
         }
         holder.itemView.setTag(position);
     }
@@ -67,6 +78,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.mViewHol
             priceTv = itemView.findViewById(R.id.his_price_tv);
             statusTv = itemView.findViewById(R.id.his_status_tv);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mItemClickListener.onItemClick(v, getLayoutPosition());
+                }
+            });
         }
     }
 

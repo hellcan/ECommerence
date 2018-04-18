@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,8 @@ import android.widget.Toast;
 import com.example.fengcheng.main.db.DbManager;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
@@ -112,6 +113,8 @@ public class FragmentDetail extends Fragment {
                 //means this user do not have this item in his cart
                 if (quantity == -1) {
                     dbManager.addItemToCart(SpUtil.getUserId(getContext()), id, name, 1, price, imgUrl);
+                    //add item
+                    EventBus.getDefault().post(1);
                 } else {
                     dbManager.updateShoppingCartQty(quantity + 1, name, SpUtil.getUserId(getContext()));
                 }
@@ -143,6 +146,7 @@ public class FragmentDetail extends Fragment {
             }
         });
     }
+
 
     /**
      * @param v root view for snack attach

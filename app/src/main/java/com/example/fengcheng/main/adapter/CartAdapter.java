@@ -16,7 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fengcheng.main.dataBean.CartInfo;
+import com.example.fengcheng.main.db.DbManager;
 import com.example.fengcheng.main.ecommerence.R;
+import com.example.fengcheng.main.utils.SpUtil;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -32,12 +34,15 @@ import java.util.List;
  */
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
-    Context context;
-    List<CartInfo.OrderBean> dataList;
+    private Context context;
+    private List<CartInfo.OrderBean> dataList;
+    private DbManager dbManager;
 
     public CartAdapter(Context context, List<CartInfo.OrderBean> dataList) {
         this.context = context;
         this.dataList = dataList;
+        dbManager = new DbManager(context);
+        dbManager.openDatabase();
     }
 
     @Override
@@ -115,11 +120,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
                 case R.id.order_add_btn:
                     quantityTv.setText(String.valueOf(Integer.parseInt(quantityTv.getText().toString()) + 1));
                     dataList.get(getLayoutPosition()).setQuantity(Integer.parseInt(quantityTv.getText().toString()));
+                    //update database
+                    dbManager.updateShoppingCartQty(dataList.get(getLayoutPosition()).getQuantity(),
+                            dataList.get(getLayoutPosition()).getPname(), SpUtil.getUserId(context));
                     EventBus.getDefault().post(true);
                     break;
                 case R.id.order_minus_btn:
                     quantityTv.setText(String.valueOf(Integer.parseInt(quantityTv.getText().toString()) - 1));
                     dataList.get(getLayoutPosition()).setQuantity(Integer.parseInt(quantityTv.getText().toString()));
+                    //update database
+                    dbManager.updateShoppingCartQty(dataList.get(getLayoutPosition()).getQuantity(),
+                            dataList.get(getLayoutPosition()).getPname(), SpUtil.getUserId(context));
 
                     if (quantityTv.getText().toString().equals("0")) {
                         AlertDialog dialog = new AlertDialog.Builder(context)
@@ -128,13 +139,18 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
                                     public void onClick(DialogInterface dialog, int which) {
                                         quantityTv.setText("1");
                                         dataList.get(getLayoutPosition()).setQuantity(1);
+                                        //update database
+                                        dbManager.updateShoppingCartQty(dataList.get(getLayoutPosition()).getQuantity(),
+                                                dataList.get(getLayoutPosition()).getPname(), SpUtil.getUserId(context));
                                     }
                                 }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        dbManager.deleteItemCart(SpUtil.getUserId(context), dataList.get(getLayoutPosition()).getPid());
                                         dataList.remove(getLayoutPosition());
                                         notifyDataSetChanged();
+                                        EventBus.getDefault().post(-1);
                                     }
                                 }).setMessage(R.string.alert_delete).create();
                         dialog.setCancelable(false);

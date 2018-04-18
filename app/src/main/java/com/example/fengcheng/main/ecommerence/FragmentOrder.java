@@ -1,5 +1,6 @@
 package com.example.fengcheng.main.ecommerence;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,8 +17,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.fengcheng.main.adapter.HistoryAdapter;
+import com.example.fengcheng.main.adapter.MainCategoryAdapter;
 import com.example.fengcheng.main.dataBean.OrderHistory;
 import com.example.fengcheng.main.dataBean.Products;
+import com.example.fengcheng.main.dialog.DialogOrderDetail;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
 
@@ -29,17 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Package com.example.fengcheng.main.ecommerence
- * @FileName FragmentOrder
- * @Date 4/11/18, 12:57 PM
- * @Author Created by fengchengding
- * @Description ECommerence
+ * Order history fragment
  */
 
 public class FragmentOrder extends Fragment {
     private static final String TAG = "FragmentOrder";
     private List<OrderHistory.Order> orderList;
     private RecyclerView historyRv;
+    ProgressDialog progress;
 
     @Nullable
     @Override
@@ -56,13 +56,16 @@ public class FragmentOrder extends Fragment {
     }
 
     private void pullData() {
+        progress = new ProgressDialog(getContext(), R.style.Base_AlertDialog);
+        progress.setCancelable(false);
+        progress.show();
+
         orderList = new ArrayList<>();
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
-//                Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
                 try {
                     JSONObject jsonObject = response;
                     JSONArray jsonArray = jsonObject.getJSONArray("Order history");
@@ -112,8 +115,20 @@ public class FragmentOrder extends Fragment {
     }
 
     private void initRecyclerView() {
+        HistoryAdapter historyAdapter = new HistoryAdapter(getContext(), orderList);
         historyRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        historyRv.setAdapter(new HistoryAdapter(getContext(), orderList));
+        historyRv.setAdapter(historyAdapter);
+
+        progress.dismiss();
+
+        historyAdapter.setMItemClickListener(new MainCategoryAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+
+                DialogOrderDetail.newInstance(orderList.get(position).getOrderid()).showDialog(getActivity().getSupportFragmentManager(), "dlg");
+            }
+        });
+
 
     }
 }

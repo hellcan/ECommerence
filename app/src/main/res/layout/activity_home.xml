@@ -28,17 +28,6 @@
     </LinearLayout>
 
     <!--nav drawer-->
-    <!--<ListView-->
-    <!--android:id="@+id/left_drawer"-->
-    <!--android:layout_width="240dp"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_gravity="start"-->
-    <!--android:background="@android:color/white"-->
-    <!--android:choiceMode="singleChoice"-->
-    <!--android:divider="@android:color/white"-->
-    <!--android:dividerHeight="0dp"-->
-    <!--android:scrollbars="none" />-->
-
     <android.support.design.widget.NavigationView
         android:id="@+id/left_drawer"
         android:layout_width="300dp"

@@ -1,6 +1,7 @@
 package com.example.fengcheng.main.ecommerence;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -9,22 +10,39 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fengcheng.main.db.DbManager;
 import com.example.fengcheng.main.utils.SpUtil;
+import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 
 public class MainHomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawerLayout;
     NavigationView leftDrawer;
     Toolbar toolbar;
-    TextView toolBarTitle;
+    TextView toolBarTitle, nameTv;
+    ImageView avatarIv;
+    ImageButton cartIbtn;
+    private Badge qBadgeView;
+    private final int GALLERY_CODE = 900;
+    private static final int CROP_CODE = 3;
     private final int DEFAULT_POS = 1;
-    int[] menuId = {R.id.profile, R.id.shop, R.id.order, R.id.logout};
     private static final String TAG = "MainHomeActivity";
+    private DbManager dbManager;
+    int cartItemCount;
 
 
     @Override
@@ -32,6 +50,8 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_home);
+
+        initDb();
 
         initToolbar();
 
@@ -43,9 +63,23 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
     }
 
+    private void initDb() {
+        if (dbManager == null) {
+            dbManager = new DbManager(this);
+        }
+        dbManager.openDatabase();
+    }
+
 
     private void clickListener() {
         leftDrawer.setNavigationItemSelectedListener(this);
+
+        cartIbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchFragment(R.string.cart_list, new ShoppingCartFragment(), "shoppingCartFgt");
+            }
+        });
     }
 
 
@@ -59,15 +93,48 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
         // header
         View header = leftDrawer.getHeaderView(0);
-        TextView nameTv = header.findViewById(R.id.username_tv);
+        nameTv = header.findViewById(R.id.username_tv);
         nameTv.setText("Welcome " + SpUtil.getLastName(getBaseContext()));
+
+        //avatar
+        avatarIv = header.findViewById(R.id.avatar_iv);
+        avatarIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //gallery intent
+                Intent startGallery = new Intent(Intent.ACTION_GET_CONTENT);
+
+                startGallery.setType("image/*");
+
+                startActivityForResult(startGallery, GALLERY_CODE);
+            }
+        });
 
 
         //this is default position
         leftDrawer.setCheckedItem(R.id.shop);
         switchFragment(R.string.m_home, new HomeFragment(), "shopFgt");
-
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case GALLERY_CODE:
+                //user canceled
+                if (data == null) {
+                    return;
+                } else {
+                    //system will return photo uri instead of a photo
+                    Uri uri = data.getData();
+                    Picasso.with(this)
+                            .load(uri)
+                            .resize(200, 200)
+                            .into(avatarIv);
+                }
+        }
+    }
+
 
     private void initView() {
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -78,8 +145,20 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     private void initToolbar() {
         toolbar = findViewById(R.id.toolbar);
         toolBarTitle = toolbar.findViewById(R.id.title_tv);
+        cartIbtn = toolbar.findViewById(R.id.cart_ibtn);
         toolBarTitle.setText(R.string.m_home);
         setSupportActionBar(toolbar);
+
+        cartItemCount = dbManager.getCartItemList(SpUtil.getUserId(getBaseContext())).size();
+        if (cartItemCount <= 0) {
+            qBadgeView = new QBadgeView(getBaseContext()).bindTarget(cartIbtn).
+                    setBadgeGravity(Gravity.END | Gravity.TOP).
+                    setBadgeNumber(0);
+        } else {
+            qBadgeView = new QBadgeView(getBaseContext()).bindTarget(cartIbtn).
+                    setBadgeGravity(Gravity.END | Gravity.TOP).
+                    setBadgeNumber(cartItemCount);
+        }
 
     }
 
@@ -112,9 +191,9 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
                 break;
         }
 
-        menuItem.setChecked(true);//点击了把它设为选中状态
+        menuItem.setChecked(true);//set up checked menu item
 
-        drawerLayout.closeDrawers();//关闭抽屉
+        drawerLayout.closeDrawers();//close drawer menu
 
         return true;
     }
@@ -133,19 +212,36 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
         super.onBackPressed();
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.cart:
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new ShoppingCartFragment(), "shoppingCartFgt").commit();
-                break;
             case R.id.wish:
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new WishFragment(), "wishFgt").commit();
+                switchFragment(R.string.wish_list, new WishFragment(), "wishFgt");
                 break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dbManager.closeDatabase();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onEvent(Integer num) {
+        qBadgeView.setBadgeNumber(cartItemCount + num);
+    }
+
 }

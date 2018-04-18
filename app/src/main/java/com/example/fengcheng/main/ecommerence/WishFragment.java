@@ -53,6 +53,7 @@ import java.util.List;
 public class WishFragment extends Fragment {
     RecyclerView recyclerView;
     private DbManager dbManager;
+    //wish item list
     private List<CartInfo.OrderBean> itemList;
     WishAdapter wishAdapter;
 
@@ -68,7 +69,6 @@ public class WishFragment extends Fragment {
         pullData();
 
         initRecyclerView();
-
 
         return v;
     }

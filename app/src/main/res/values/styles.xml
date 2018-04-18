@@ -58,4 +58,29 @@
         <item name="android:background">@drawable/bg_edt</item>
     </style>
 
+    <style name="SummaryTextTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/normal_size</item>
+        <item name="android:padding">@dimen/normal_size</item>
+        <item name="android:textColorHint">@color/edt_hint_color</item>
+        <item name="android:background">@drawable/bg_edt</item>
+        <item name="android:layout_marginStart">@dimen/padding_size</item>
+        <item name="android:layout_marginEnd">@dimen/padding_size</item>
+    </style>
+
+    <style name="Base_AlertDialog" parent="Base.Theme.AppCompat.Light.Dialog">
+
+        <item name="windowMinWidthMinor">90%</item>
+
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="android:topDark">@color/white0</item>
+
+        <!--left in right out-->
+        <!--<item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>-->
+
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
 </resources>

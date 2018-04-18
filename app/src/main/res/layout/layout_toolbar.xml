@@ -18,10 +18,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:gravity="center"
+                android:layout_centerVertical="true"
                 android:textColor="@android:color/white"
                 android:text="@string/example"
                 android:textSize="@dimen/normal_txt_size" />
+
+            <ImageButton
+                android:id="@+id/cart_ibtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/normal_size"
+                android:paddingBottom="@dimen/normal_size"
+                android:paddingStart="@dimen/small_size"
+                android:paddingEnd="@dimen/small_size"
+                android:src="@drawable/ic_cart"
+                android:layout_marginEnd="@dimen/small_size"
+                android:background="@null"
+                android:layout_alignParentEnd="true"/>
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>

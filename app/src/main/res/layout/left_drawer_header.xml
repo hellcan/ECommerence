@@ -12,16 +12,20 @@
         android:paddingEnd="@dimen/medium_size"
         android:orientation="vertical">
 
+        <ImageView
+            android:id="@+id/avatar_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_size"
+            android:src="@drawable/ic_avatar"/>
+
         <TextView
             android:id="@+id/username_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/example"
             android:gravity="center"
-            android:drawablePadding="@dimen/small_size"
             android:textColor="@android:color/white"
-            android:drawableTop="@drawable/ic_avatar"
-            android:layout_marginTop="@dimen/normal_size"
             android:layout_marginBottom="@dimen/normal_size"/>
     </LinearLayout>
 </FrameLayout>

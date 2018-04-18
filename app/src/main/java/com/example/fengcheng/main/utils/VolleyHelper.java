@@ -30,6 +30,7 @@ public class VolleyHelper {
     private final String BASE_URL = "http://rjtmobile.com/aamir/e-commerce/android-app/";
     private final String BASE_URL_CATEGORY = "http://rjtmobile.com/ansari/shopingcart/androidapp/";
     private final String BASE_URL_PAYMENT = "http://rjtmobile.com/aamir/e-commerce/android-app/";
+    private final String BASE_RESET_PWD = "http://rjtmobile.com/aamir/e-commerce/android-app/androidapp/";
     private static final String TAG = "VolleyHelper";
     private static VolleyHelper instance;
 
@@ -103,7 +104,7 @@ public class VolleyHelper {
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
 
-    //request to get sub category
+    //request payment
     public JsonObjectRequest paymentRequest(String pid, String pname, String quantity, String price,
                                             String userId, String userName, String mobile, String email, String apikey,
                                             Response.Listener<JSONObject> listener, Response.ErrorListener errorListener,
@@ -111,7 +112,7 @@ public class VolleyHelper {
 
         String url = BASE_URL_PAYMENT + "orders.php?" + "item_id=" + pid + "&item_name=" + pname
                 + "&item_quantity=" + quantity + "&final_price=" + price + "&api_key=" + apikey
-                + "&user_id=" + userId + "&user_name=" + userName + "&billingadd=Noida&deliveryadd=Noida" +
+                + "&user_id=" + userId + "&user_name=" + userName + "&billingadd=Noida&deliveryadd=113S3rdSt,Geneva,IL60134" +
                 "&mobile=" + mobile + "&email=" + email;
 
         Log.i("url", url);
@@ -155,4 +156,24 @@ public class VolleyHelper {
         Log.i("url", url);
         return new JsonObjectRequest(url, null, listener, errorListener);
     }
+
+    //request to get productList
+    public JsonObjectRequest shipmentRequest(String apikey, String userId, String orderId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+
+        String url = BASE_URL + "shipment_track.php?" + "api_key=" + apikey + "&user_id=" + userId + "&order_id=" + orderId;
+
+        Log.i("url", url);
+        return new JsonObjectRequest(url, null, listener, errorListener);
+    }
+
+    //forget password
+    public StringRequest forgetPwdRequest(String email, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+
+        String url = BASE_RESET_PWD + "shop_fogot_pass.php?" + "&email=" + email;
+        Log.i("url", url);
+
+        return new StringRequest(Request.Method.GET, url, listener, errorListener);
+    }
+
+
 }

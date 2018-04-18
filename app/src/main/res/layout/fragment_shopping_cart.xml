@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,8 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/white"
         android:animateLayoutChanges="true"
+        android:background="@android:color/white"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -157,5 +159,60 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ordersum_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:visibility="gone">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/medium_size"
+            android:gravity="center"
+            android:text="@string/order_summary"
+            android:textColor="@color/bt_error_red"
+            android:textSize="@dimen/normal_txt_size" />
+
+        <TextView
+            android:id="@+id/orderid_tv"
+            style="@style/SummaryTextTheme"
+            android:layout_marginTop="@dimen/medium_size"
+            android:text="Order ID" />
+
+        <TextView
+            android:id="@+id/time_tv"
+            style="@style/SummaryTextTheme"
+            android:text="Placed On" />
+
+        <TextView
+            android:id="@+id/address_tv"
+            style="@style/SummaryTextTheme"
+            android:text="Address" />
+
+        <TextView
+            android:id="@+id/mobile_tv"
+            style="@style/SummaryTextTheme"
+            android:text="Mobile" />
+
+        <TextView
+            android:id="@+id/payment_tv"
+            style="@style/SummaryTextTheme"
+            android:gravity="center"
+            android:text="@string/example" />
+
+        <Button
+            android:id="@+id/track_btn"
+            style="@style/LogSignBtnTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/medium_size"
+            android:background="@color/bt_error_red"
+            android:padding="@dimen/medium_size"
+            android:text="@string/track_my_order"
+            android:textColor="@color/white0" />
+    </LinearLayout>
 </RelativeLayout>

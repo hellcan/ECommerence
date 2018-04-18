@@ -1,5 +1,6 @@
 package com.example.fengcheng.main.ecommerence;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.example.fengcheng.main.dialog.DialogFindPwd;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
 
@@ -29,11 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @Package com.example.fengcheng.main.ecommerence
- * @FileName LoginFragment
- * @Date 4/9/18, 11:14 PM
- * @Author Created by fengchengding
- * @Description ECommerence
+ * log in fragment doing log in business execution
  */
 
 public class LoginFragment extends Fragment {
@@ -42,6 +40,7 @@ public class LoginFragment extends Fragment {
     Button signBtn, regBtn, findPwdBtn;
     ImageButton closeBtn;
     private static final String TAG = "LoginFragment";
+    ProgressDialog progress;
 
     @Nullable
     @Override
@@ -64,36 +63,39 @@ public class LoginFragment extends Fragment {
         regBtn = v.findViewById(R.id.signup_btn);
         findPwdBtn = v.findViewById(R.id.findpwd_btn);
 
+        //check if shared preference have remember me data
         String remember = SpUtil.getRemember(getContext());
 
-//        Log.i("测试", remember);
-
+        //if yes, fill the data in editText and check remember me checkbox
         if (remember != null) {
             mobileEdt.setText(remember);
             remeCbx.setChecked(true);
         } else {
             remeCbx.setChecked(false);
         }
-
     }
 
     private void clickListener() {
         signBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progress = new ProgressDialog(getContext(), R.style.Base_AlertDialog);
+                progress.setCancelable(false);
+                progress.show();
+                //everyTime we need check if the remember me data had been changed
                 saveRemember();
-
+                //check if mobile length equal to 10
                 if (mobileEdt.getText().toString().length() != 10) {
-                    Toast.makeText(getActivity().getBaseContext(), "Mobile num must be 10 digits", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getBaseContext(), R.string.mobile_verificatin, Toast.LENGTH_SHORT).show();
+                    //password length must larger than 6
                 } else if (pwdEdt.getText().toString().length() < 6) {
-                    Toast.makeText(getActivity().getBaseContext(), "Password must be larger than 6 digits", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getBaseContext(), R.string.pwd_verify, Toast.LENGTH_SHORT).show();
                 } else {
-
+                    //go login and get response from server
                     Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
 
                         @Override
                         public void onResponse(JSONArray response) {
-//                            Toast.makeText(getActivity().getBaseContext(), response.toString(), Toast.LENGTH_SHORT).show();
                             try {
                                 for (int i = 0; i < response.length(); i++) {
                                     JSONObject user = (JSONObject) response.get(i);
@@ -108,6 +110,8 @@ public class LoginFragment extends Fragment {
                                     SpUtil.setUserInfo(getContext(), firstname, lastname, email, mobile, apiKey, id);
 
                                     startActivity(new Intent(getActivity(), MainHomeActivity.class));
+                                    progress.dismiss();
+
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -122,6 +126,7 @@ public class LoginFragment extends Fragment {
                         }
                     };
 
+                    //generate volley json array request
                     JsonArrayRequest logRequest = VolleyHelper.getInstance().loginRequest(mobileEdt.getText().toString(), pwdEdt.getText().toString(), listener, errorListener);
 
                     AppController.getInstance().addToRequestQueue(logRequest, "reg");
@@ -133,7 +138,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveRemember();
-
+                //registration screen
                 getActivity().getSupportFragmentManager()
                         .beginTransaction().replace(R.id.frame_container, new SignUpFragment(), "signfgt")
                         .addToBackStack(null)
@@ -142,10 +147,13 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        //find password
         findPwdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveRemember();
+
+                DialogFindPwd.newInstance().showDialog(getActivity().getSupportFragmentManager(), "findpwd");
             }
         });
 
@@ -154,6 +162,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveRemember();
+                //close the app
                 System.exit(0);
             }
         });

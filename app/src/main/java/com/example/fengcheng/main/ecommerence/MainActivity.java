@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //log in fragment
+        //first screen log in fragment
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame_container, new LoginFragment(), "logFgt").
                 commit();

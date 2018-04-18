@@ -26,19 +26,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @Package com.example.fengcheng.main.ecommerence
- * @FileName SignUpFragment
- * @Date 4/9/18, 11:14 PM
- * @Author Created by fengchengding
- * @Description ECommerence
+ * sign up fragment
  */
 
 public class SignUpFragment extends Fragment {
     EditText firstEdt, lastEdt, addressEdt, mobEdt, emailEdt, pwdEdt;
     Button signUpBtn, logBtn;
     ImageButton closeBtn;
+    //regex for check email format
     private static final String EMAIL_FORMAT = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
-
 
     @Nullable
     @Override
@@ -69,16 +65,20 @@ public class SignUpFragment extends Fragment {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //first check if all the text field are null
                 if (TextUtils.isEmpty(firstEdt.getText().toString()) || TextUtils.isEmpty(lastEdt.getText().toString())
                         || TextUtils.isEmpty(addressEdt.getText().toString()) || TextUtils.isEmpty(mobEdt.getText().toString())
                         || TextUtils.isEmpty(emailEdt.getText().toString()) || TextUtils.isEmpty(pwdEdt.getText().toString())) {
-                    Toast.makeText(getActivity().getBaseContext(), "Text field can not be null", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getBaseContext(), R.string.alert_not_null, Toast.LENGTH_SHORT).show();
+                    //password length must larger than 6
                 } else if (pwdEdt.getText().toString().length() < 6) {
-                    Toast.makeText(getActivity().getBaseContext(), "Password can not less than 6 digits", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getBaseContext(), R.string.pwd_verify, Toast.LENGTH_SHORT).show();
+                    //mobile length must equal 10
                 } else if (mobEdt.getText().toString().length() != 10) {
-                    Toast.makeText(getActivity().getBaseContext(), "Mobile num must 10 digits", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getBaseContext(), R.string.mobile_verificatin, Toast.LENGTH_SHORT).show();
+                    //if it is an valid email format
                 } else if (!emailEdt.getText().toString().matches(EMAIL_FORMAT)){
-                    Toast.makeText(getActivity().getBaseContext(), "Not a valid email format", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getBaseContext(), R.string.alert_email_format, Toast.LENGTH_SHORT).show();
                 }else {
 
                     Response.Listener<String> listener = new Response.Listener<String>() {
@@ -101,7 +101,6 @@ public class SignUpFragment extends Fragment {
                             Toast.makeText(getActivity().getBaseContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     };
-
 
                     StringRequest regRequest = VolleyHelper.getInstance().registrationRequest(firstEdt.getText().toString(), lastEdt.getText().toString(), addressEdt.getText().toString(),
                             mobEdt.getText().toString(), emailEdt.getText().toString(), pwdEdt.getText().toString(), listener, errorListener);

@@ -12,7 +12,7 @@
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="address">Address</string>
-    <string name="email">Email</string>
+    <string name="email">Email Address</string>
     <string name="agreement">By pressing Sign Up you agree with the Terms of Services and Privacy Policy</string>
     <string name="forget_passwrod">Forget password?</string>
     <string name="example">example</string>
@@ -43,14 +43,36 @@
     <string name="order">Pay</string>
     <string name="alert_delete">You want remove this item from shopping cart?</string>
     <string name="rate_example">3.5</string>
-    <string name="process">In process</string>
+    <string name="order_confirm">Order Confirm</string>
+    <string name="order_dispatch">Order Dispatch</string>
+    <string name="order_on_way">Order On the Way</string>
+    <string name="order_delivered">Order Delivered</string>
     <string name="empty_txt" />
     <string name="remove">Remove</string>
-    <string name="about">About</string>
+    <string name="about">Technology</string>
 
     <string name="about_us">Technologies: \nMaterial Design \nMaterialRatingBar \nEasyBanner \nPicasso \nLoadingIndicatorView \nEventBus \nVolley
         \nBraintree \nRecyclerView \nDrawerLayout \nNavigationView \nCardView \nAsyncTask \nFragment \nViewPager
     </string>
+    <string name="mobile_verificatin">Mobile num must be 10 digits</string>
+    <string name="pwd_verify">Password must be larger than 6 digits</string>
+    <string name="alert_not_null">Text field can not be null</string>
+    <string name="alert_email_format">Not a valid email format</string>
+    <string name="track_order">Track order</string>
+    <string name="submit">Submit</string>
+    <string name="reset_pwd">Please check email to reset new password</string>
+    <string name="order_summary">Order Summary</string>
+    <string name="track_my_order">Track my order</string>
+    <string name="pay_summary">Payment Summary</string>
+    <string name="pay_total">Total Price</string>
+    <string name="pay_paid">You Paid</string>
+    <string name="pay_paymenttype">PaymentType</string>
+    <string name="pay_card">Card Number</string>
+    <string name="pay_time">Placed on:</string>
+    <string name="pay_address">Delivery address:</string>
+    <string name="pay_mobile">Phone#:</string>
+    <string name="wish_list">My wish</string>
+    <string name="cart_list">"My cart"</string>
 
 
 </resources>
