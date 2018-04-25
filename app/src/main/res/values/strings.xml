@@ -52,7 +52,7 @@
     <string name="about">Technology</string>
 
     <string name="about_us">Technologies: \nMaterial Design \nMaterialRatingBar \nEasyBanner \nPicasso \nLoadingIndicatorView \nEventBus \nVolley
-        \nBraintree \nRecyclerView \nDrawerLayout \nNavigationView \nCardView \nAsyncTask \nFragment \nViewPager
+        \nBraintree Payment Gateway \nRecyclerView \nDrawerLayout \nNavigationView \nCardView \nAsyncTask \nFragment \nViewPager \nQBadgeView\nDialogFragment
     </string>
     <string name="mobile_verificatin">Mobile num must be 10 digits</string>
     <string name="pwd_verify">Password must be larger than 6 digits</string>

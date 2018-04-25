@@ -21,6 +21,7 @@ import com.example.fengcheng.main.adapter.MainCategoryAdapter;
 import com.example.fengcheng.main.dataBean.OrderHistory;
 import com.example.fengcheng.main.dataBean.Products;
 import com.example.fengcheng.main.dialog.DialogOrderDetail;
+import com.example.fengcheng.main.utils.HistoryComparator;
 import com.example.fengcheng.main.utils.SpUtil;
 import com.example.fengcheng.main.utils.VolleyHelper;
 
@@ -29,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -115,6 +117,7 @@ public class FragmentOrder extends Fragment {
     }
 
     private void initRecyclerView() {
+        Collections.sort(orderList, new HistoryComparator());
         HistoryAdapter historyAdapter = new HistoryAdapter(getContext(), orderList);
         historyRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         historyRv.setAdapter(historyAdapter);

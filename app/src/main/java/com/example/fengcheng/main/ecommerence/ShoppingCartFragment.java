@@ -242,6 +242,7 @@ public class ShoppingCartFragment extends Fragment {
         if (quantityChanged) {
             countTotal(quantityChanged);
         }
+        
     }
 
     @Override

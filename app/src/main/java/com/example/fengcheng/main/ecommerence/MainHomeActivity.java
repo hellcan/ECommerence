@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,9 +38,7 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     ImageView avatarIv;
     ImageButton cartIbtn;
     private Badge qBadgeView;
-    private final int GALLERY_CODE = 900;
-    private static final int CROP_CODE = 3;
-    private final int DEFAULT_POS = 1;
+    private final static int GALLERY_CODE = 900;
     private static final String TAG = "MainHomeActivity";
     private DbManager dbManager;
     int cartItemCount;
@@ -72,6 +71,7 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
 
     private void clickListener() {
+        Log.i(TAG, "clickListener: ");
         leftDrawer.setNavigationItemSelectedListener(this);
 
         cartIbtn.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +143,7 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
     }
 
     private void initToolbar() {
+        Log.i(TAG, "initToolbar: ");
         toolbar = findViewById(R.id.toolbar);
         toolBarTitle = toolbar.findViewById(R.id.title_tv);
         cartIbtn = toolbar.findViewById(R.id.cart_ibtn);
@@ -241,7 +242,14 @@ public class MainHomeActivity extends AppCompatActivity implements NavigationVie
 
     @Subscribe
     public void onEvent(Integer num) {
-        qBadgeView.setBadgeNumber(cartItemCount + num);
+        cartItemCount = cartItemCount + num;
+        if (cartItemCount <= 0) {
+            qBadgeView.setBadgeNumber(0);
+
+        } else {
+            qBadgeView.setBadgeNumber(cartItemCount);
+        }
+
     }
 
 }

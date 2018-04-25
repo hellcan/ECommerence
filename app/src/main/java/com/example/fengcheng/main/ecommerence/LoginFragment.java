@@ -87,9 +87,13 @@ public class LoginFragment extends Fragment {
                 //check if mobile length equal to 10
                 if (mobileEdt.getText().toString().length() != 10) {
                     Toast.makeText(getActivity().getBaseContext(), R.string.mobile_verificatin, Toast.LENGTH_SHORT).show();
+                    progress.dismiss();
+
                     //password length must larger than 6
                 } else if (pwdEdt.getText().toString().length() < 6) {
                     Toast.makeText(getActivity().getBaseContext(), R.string.pwd_verify, Toast.LENGTH_SHORT).show();
+                    progress.dismiss();
+
                 } else {
                     //go login and get response from server
                     Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
@@ -123,6 +127,7 @@ public class LoginFragment extends Fragment {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Toast.makeText(getActivity().getBaseContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                            progress.dismiss();
                         }
                     };
 
@@ -171,7 +176,7 @@ public class LoginFragment extends Fragment {
     public void saveRemember() {
         if (remeCbx.isChecked()) {
             SpUtil.setRemember(getContext(), mobileEdt.getText().toString());
-        }else {
+        } else {
             SpUtil.setRemember(getContext(), null);
         }
     }

@@ -55,7 +55,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.mViewHolder> {
 
             mVH = new mViewHolder(v);
 
-
         } else {
 
             View v = LayoutInflater.from(context).inflate(R.layout.item_shoppingcart, parent, false);
